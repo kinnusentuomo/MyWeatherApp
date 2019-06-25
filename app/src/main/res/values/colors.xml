@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBlack">#000</color>
+    <color name="colorWhite">#FFFF</color>
+
+
+    <color name="colorPrimaryDark">@android:color/darker_gray</color>
+    <color name="colorPrimary">#FFFFFF</color> <!-- #AA this is the background -->
+    <color name="colorPrimaryTransparent">#AAFFFFFF</color> <!-- #AA this is the background -->
+    <color name="colorAccent">#ff325e7b</color> <!-- toolbar color -->
+    <color name="colorAccentLight">#02C39A</color>
+    <color name="colorContrast">#F0F3BD</color>
+    <color name="textColorDark">#000</color>
+
+
+    <color name="barColor1"></color>
+    <color name="barColor2"></color>
+    <color name="barColor3"></color>
+    <color name="barColor4"></color>
+    <color name="barColor5"></color>
+    <color name="barColor6"></color>
+    <color name="barColor7"></color>
+</resources>
