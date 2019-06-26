@@ -10,15 +10,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 import org.json.JSONObject
 import java.net.URL
@@ -143,6 +140,9 @@ class WeatherDetailFragment : Fragment() {
         fusedLocationClient.lastLocation
             .addOnCompleteListener{
                 getWeatherDataJson("gps", returnLastLocation)
+
+                (activity as MainActivity).addSharedPref("locationLatitude", returnLastLocation.latitude.toFloat())
+                (activity as MainActivity).addSharedPref("locationLatitude", returnLastLocation.longitude.toFloat())
             }
 
 
