@@ -15,9 +15,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import android.text.method.Touch.onTouchEvent
-import android.view.MotionEvent
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 
@@ -35,20 +32,48 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
+    WeatherDetailGetterThread.ThreadReport {
+
+
+    val appId = "7ac8041476369264714a77f37e2f4141"
+    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
+        addMarkerWithDetails(myWeatherDetailObject)
+    }
+
     override fun onMapLongClick(p0: LatLng) {
+
+        /*
         mMap.addMarker(MarkerOptions()
             .position(p0)
             .title("Fetching weather information...")
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))*/
 
         Log.d(TAG, p0.toString())
-
 
         val location = Location("")
         location.longitude = p0.longitude
         location.latitude = p0.latitude
         (activity as MainActivity).sendQueryWithLocation(location)
+        queryWithLocation(location)
+    }
+
+    fun queryWithLocation(location: Location){
+        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this)
+        weatherDetailGetterThread.call()
+    }
+
+
+    fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){
+
+
+        val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
+        val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
+        mMap.addMarker(MarkerOptions()
+            .position(latLng)
+            .title(titleString)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
     }
 
 
@@ -58,6 +83,11 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
+
+
+        //val locationHandler = LocationHandler()
+        //locationHandler.getLastLocation(this.requireContext(), Location("") -> moveCamera())
+
 
         mMap = p0
 
@@ -72,10 +102,15 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
             (activity as MainActivity).getSharedPref("locationLongitude").toDouble()
         )
 
-        mMap.addMarker(MarkerOptions().position(oulu).title("Oulu"))
-        mMap.addMarker(MarkerOptions().position(currentLocation).title("Current location"))
+        //mMap.addMarker(MarkerOptions().position(oulu).title("Oulu"))
+        //mMap.addMarker(MarkerOptions().position(currentLocation).title("Current location"))
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(oulu))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
+    }
+
+
+    fun moveCamera(latLng: LatLng = LatLng(0.0, 0.0)) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
 

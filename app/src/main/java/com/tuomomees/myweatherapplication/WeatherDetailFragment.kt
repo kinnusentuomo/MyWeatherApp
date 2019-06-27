@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -37,21 +39,38 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class WeatherDetailFragment : Fragment() {
+
+
+    val TAG = "WeatherDetailFragment"
+
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+
+    lateinit var myWeatherDetailObject: MyWeatherDetailObject
+
+
+
     private var listener: OnFragmentInteractionListener? = null
-
-
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        myWeatherDetailObject = MyWeatherDetailObject()
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+            myWeatherDetailObject = it.getParcelable("sentWeatherObject") as MyWeatherDetailObject
+
+            Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
         }
+
+
+
     }
 
     override fun onCreateView(
@@ -65,7 +84,11 @@ class WeatherDetailFragment : Fragment() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
 
-        getLastLocation()
+        Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
+
+        updateFragment(myWeatherDetailObject, view)
+
+        //getLastLocation()
 
         return  view
     }
@@ -125,6 +148,38 @@ class WeatherDetailFragment : Fragment() {
             }
     }
 
+    fun updateFragment(myWeatherDetailObject: MyWeatherDetailObject, view: View){
+
+
+        view.findViewById<TextView>(R.id.textViewWeather).text = myWeatherDetailObject.weather
+        view.findViewById<TextView>(R.id.textViewCity).text = myWeatherDetailObject.cityName
+        view.findViewById<TextView>(R.id.textViewTemperature).text = "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
+        view.findViewById<TextView>(R.id.textViewHumidity).text = myWeatherDetailObject.humidity.toString() + "%"
+        view.findViewById<TextView>(R.id.textViewWindSpeed).text = myWeatherDetailObject.windSpeed.toString() + "m/s"
+
+
+        /*textViewWeather.text = myWeatherDetailObject.weather
+        textViewCity.text = myWeatherDetailObject.cityName.toString()
+        textViewTemperature.text = "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
+        textViewHumidity.text = myWeatherDetailObject.humidity.toString() + "%"
+        textViewWindSpeed.text = myWeatherDetailObject.windSpeed.toString() + "m/s"
+
+        when(myWeatherDetailObject.weather){
+            "Clear" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_wb_sunny_white_24dp)
+            "Clouds" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_cloud_white_24dp)
+        }*/
+
+        when(myWeatherDetailObject.weather){
+            "Clear" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_wb_sunny_white_24dp)
+            "Clouds" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_cloud_white_24dp)
+        }
+    }
+
+
+
+    /*
+
+
     //Added
     fun getLastLocation(): Location {
 
@@ -132,8 +187,8 @@ class WeatherDetailFragment : Fragment() {
 
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location ->
-                Log.d("LastLongitude", location?.longitude.toString())
-                Log.d("LastLatitude", location?.latitude.toString())
+                Log.d("LastLongitude", location.longitude.toString())
+                Log.d("LastLatitude", location.latitude.toString())
                 returnLastLocation = location
             }
 
@@ -187,6 +242,7 @@ class WeatherDetailFragment : Fragment() {
                         val jsonObject = JSONObject(response)
 
                         val weatherBlock = jsonObject.getJSONArray("weather")
+                        val coordBlock = jsonObject.getJSONObject("coord")
                         val mainBlock = jsonObject.getJSONObject("main")
                         val windBlock = jsonObject.getJSONObject("wind")
 
@@ -194,6 +250,11 @@ class WeatherDetailFragment : Fragment() {
                         val temp_c = temp_k - 273.15
                         val cityName = jsonObject.get("name")
                         var weather = ""
+
+
+
+                        val lat = coordBlock.getDouble("lat")
+                        val lon = coordBlock.getDouble("lon")
 
 
                         val windSpeed = windBlock.getString("speed")
@@ -205,10 +266,18 @@ class WeatherDetailFragment : Fragment() {
                             weather = item.get("main").toString()
                         }
 
-                        when(weather){
-                            "Clear" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_wb_sunny_white_24dp)
-                            "Clouds" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_cloud_white_24dp)
-                        }
+
+                        val myWeatherDetailObject = MyWeatherDetailObject()
+                        myWeatherDetailObject.humidity = humidity.toDouble()
+                        myWeatherDetailObject.temp_c = temp_c
+                        myWeatherDetailObject.weather = weather
+                        myWeatherDetailObject.windSpeed = windSpeed.toDouble()
+                        myWeatherDetailObject.latitude = lat
+                        myWeatherDetailObject.longitude = lon
+                        myWeatherDetailObject.cityName = cityName.toString()
+
+                        (activity as MainActivity).addMarker(myWeatherDetailObject)
+
 
                         this.activity!!.runOnUiThread {
                             textViewWeather.text = weather
@@ -216,6 +285,11 @@ class WeatherDetailFragment : Fragment() {
                             textViewTemperature.text = "%.0f".format(temp_c) + "°C"
                             textViewHumidity.text = humidity + "%"
                             textViewWindSpeed.text = windSpeed + "m/s"
+
+                            when(weather){
+                                "Clear" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_wb_sunny_white_24dp)
+                                "Clouds" -> imageViewWeatherIcon.setImageResource(R.drawable.ic_cloud_white_24dp)
+                            }
                         }
 
                         Log.d("Request", "ready")
@@ -224,5 +298,5 @@ class WeatherDetailFragment : Fragment() {
                 queue.add(stringRequest)
             }
         }
-    }
+    }*/
 }
