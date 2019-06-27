@@ -95,7 +95,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMap = p0
 
         mMap.setOnMapLongClickListener(this);
-
+/*
         // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
         val oulu = LatLng(65.01, 25.50)
@@ -104,6 +104,26 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         val currentLocation = LatLng((activity as MainActivity).getSharedPref("locationLatitude").toDouble(),
             (activity as MainActivity).getSharedPref("locationLongitude").toDouble()
         )
+        */
+
+
+        var myLocation: Location = Location("")
+        (activity as MainActivity).fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location ->
+                Log.d("LastLongitude", location.longitude.toString())
+                Log.d("LastLatitude", location.latitude.toString())
+                myLocation = location
+            }
+
+        (activity as MainActivity).fusedLocationClient.lastLocation.addOnCompleteListener{
+            moveCamera(LatLng(myLocation.latitude, myLocation.longitude))
+            mMap.addMarker(MarkerOptions()
+                .position(LatLng(myLocation.latitude, myLocation.longitude))
+                .title("Current location")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+        }
+
+
 
         //mMap.addMarker(MarkerOptions().position(oulu).title("Oulu"))
         //mMap.addMarker(MarkerOptions().position(currentLocation).title("Current location"))

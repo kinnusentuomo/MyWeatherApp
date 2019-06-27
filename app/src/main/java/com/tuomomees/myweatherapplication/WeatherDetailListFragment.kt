@@ -13,6 +13,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import java.util.ArrayList
 
+
+
+
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -68,7 +71,8 @@ class WeatherDetailListFragment : Fragment() {
 
 
         Log.d(TAG, "listItems" + listItems.toString())
-        adapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_list_item_1, listItems)
+        //adapter = ArrayAdapter(this.requireContext(), R.layout.simple_list_item_1, listItems)
+        adapter = ArrayAdapter(this.requireContext(), R.layout.custom_list_view_layout, R.id.textView2, listItems)
         listView.adapter = adapter
 
         if (listView != null) {

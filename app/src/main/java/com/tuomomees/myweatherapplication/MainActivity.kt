@@ -17,7 +17,7 @@ import android.view.View
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.os.Parcelable
-
+import com.google.android.gms.maps.model.LatLng
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var viewPager: ViewPager
     private lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
+    lateinit var lastLatLng: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +115,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         false
     }
 
-
     fun getFragmentWithTag(tag: String): Fragment {
         for (fragment in fragmentList) {
             if(fragment.tag == tag){
@@ -128,10 +128,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
 
     //Added
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    lateinit var fusedLocationClient: FusedLocationProviderClient
     fun getLastLocation(){
-
-
 
         var myLocation: Location = Location("Washington")
         fusedLocationClient.lastLocation
@@ -147,6 +145,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                 val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
                 weatherDetailGetterThread.call()
+                lastLatLng = LatLng(myLocation.latitude, myLocation.longitude)
             }
     }
 
