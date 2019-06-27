@@ -37,7 +37,7 @@ public class CustomTextView extends TextView {
     public void setCustomFont(Context ctx, String asset) {
         Typeface typeface;
         try {
-            typeface = Typeface.createFromAsset(ctx.getAssets(),"fonts/"+asset);
+            typeface = Typeface.createFromAsset(ctx.getAssets(),"fonts/"+asset + ".ttf");
         } catch (Exception e) {
             Log.e(TAG, "Unable to load typeface: "+e.getMessage());
             return;

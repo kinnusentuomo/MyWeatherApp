@@ -1,7 +1,6 @@
 package com.tuomomees.myweatherapplication
 
 import android.content.Context
-import android.os.AsyncTask
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
@@ -9,10 +8,8 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import java.net.URL
-import java.util.*
 import java.util.concurrent.Callable
 import javax.net.ssl.HttpsURLConnection
-import kotlin.concurrent.thread
 
 class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport): Thread(),
     Callable<MyWeatherDetailObject> {

@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fragmentList.add(weatherDetailFragment)
 
+
         mapFragment.addMarkerWithDetails(myWeatherDetailObject)
 
 

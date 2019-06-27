@@ -1,6 +1,7 @@
 package com.tuomomees.myweatherapplication
 
 import android.content.Context
+import android.content.res.Resources
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -13,12 +14,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 
-
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -34,6 +34,12 @@ private const val ARG_PARAM2 = "param2"
  */
 class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
+
+
+
+    val TAG = "MapViewFragment"
+    lateinit var mMap: GoogleMap
+
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
         //(activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
     }
@@ -73,6 +79,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
+
         mMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(titleString)
@@ -80,8 +87,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     }
 
 
-    val TAG = "MapViewFragment"
-    private lateinit var mMap: GoogleMap
 
 
     override fun onMapReady(p0: GoogleMap) {
@@ -95,6 +100,24 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMap = p0
 
         mMap.setOnMapLongClickListener(this);
+
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this.requireContext(), R.raw.style_json
+                )
+            )
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", e)
+        }
+
 /*
         // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)

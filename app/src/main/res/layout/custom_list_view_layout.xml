@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content" xmlns:app="http://schemas.android.com/apk/res-auto">
+              android:layout_height="wrap_content" xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="horizontal">
 
-    <com.tuomomees.myweatherapplication.CustomTextView
-            app:customFont="vertigo.ttf"
-            android:layout_width="match_parent"
+    <TextView
+
+            android:fontFamily="@font/vertigo"
+            android:layout_width="350sp"
             android:layout_height="wrap_content"
             android:text="New Text"
             android:layout_marginLeft="5dp"
             android:id="@+id/textView2"
             android:textSize="30sp"
             android:textColor="@color/colorWhite" android:layout_marginStart="5dp"/>
+
+    <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/imageViewListIcon"
+    android:background="@drawable/ic_cloud_white_24dp"/>
 </LinearLayout>

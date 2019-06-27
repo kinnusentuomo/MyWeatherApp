@@ -1,9 +1,7 @@
 package com.tuomomees.myweatherapplication
 
 import android.content.Context
-import android.location.Location
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -12,16 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import kotlinx.android.synthetic.main.fragment_weather_detail.*
-import org.json.JSONObject
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 
 // TODO: Rename parameter arguments, choose names that match
