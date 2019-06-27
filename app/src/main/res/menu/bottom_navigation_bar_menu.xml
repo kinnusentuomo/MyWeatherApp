@@ -6,6 +6,11 @@
             android:title="Map"/>
 
     <item
+            android:id="@+id/navigation_history"
+            android:icon="@drawable/ic_format_list_numbered_white_24dp"
+            android:title="History"/>
+
+    <item
             android:id="@+id/navigation_weather"
             android:icon="@drawable/ic_cloud_white_24dp"
             android:title="Weather"/>

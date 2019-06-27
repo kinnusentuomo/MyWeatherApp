@@ -34,6 +34,9 @@ private const val ARG_PARAM2 = "param2"
  */
 class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
+    override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
+        //(activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
+    }
 
 
     val appId = "7ac8041476369264714a77f37e2f4141"

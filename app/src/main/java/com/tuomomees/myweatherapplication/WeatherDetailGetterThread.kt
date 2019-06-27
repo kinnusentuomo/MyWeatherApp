@@ -21,6 +21,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject)
+        fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
 
 
@@ -101,6 +102,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     gettingData = true
 
                     threadObserver.ThreadReady(myWeatherDetailObject)
+                    threadObserver.addDataToList(myWeatherDetailObject)
 
                 }, Response.ErrorListener { stopThread(true)})
             queue.add(stringRequest)
