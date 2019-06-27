@@ -4,17 +4,17 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.widget.ArrayAdapter
 
 import android.widget.ListView
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
-
-
-
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -63,6 +63,10 @@ class WeatherDetailListFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_weather_detail_list, container, false)
         val listView = view.findViewById<ListView>(R.id.weatherDetailListView)
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            (activity as MainActivity).viewPager.currentItem = position + 2
+        }
 
         listItems = ArrayList()
         weatherDetailObjectList = (activity as MainActivity).weatherDetailObjectList

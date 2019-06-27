@@ -18,6 +18,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_weather_detail_list.*
+import java.net.URL
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         viewPager.adapter?.notifyDataSetChanged()
 */
+
         viewPager.adapter?.notifyDataSetChanged()
 
         Log.d(TAG, "added fragment to list")
@@ -184,8 +188,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     }
 
     fun sendQueryWithCity(v: View){
-        //val fragment = fragmentList.get(0) as WeatherDetailFragment
-        //fragment.getWeatherDataJson("city", city=editTextCity.text.toString())
+        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + editTextCity.text + "&appid=" + appId
+        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
+        weatherDetailGetterThread.call()
     }
 
     fun sendQueryWithLocation(location: Location){
