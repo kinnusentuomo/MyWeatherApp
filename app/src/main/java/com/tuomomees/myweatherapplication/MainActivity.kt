@@ -14,13 +14,18 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Toolbar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_weather_detail_list.*
-import java.net.URL
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import kotlinx.android.synthetic.main.fragment_map_view.*
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -39,10 +44,17 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
+        //requestWindowFeature(Window.FEATURE_NO_TITLE)
+        //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
+
         setContentView(R.layout.activity_main)
 
 
-
+        supportActionBar?.hide()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -52,14 +64,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fragmentList = ArrayList()
         weatherDetailObjectList = ArrayList()
-        //fragmentList.add(WeatherDetailFragment())
 
         listFragment = WeatherDetailListFragment()
         mapFragment = MapViewFragment()
 
         fragmentList.add(mapFragment)
         fragmentList.add(listFragment)
-
 
         viewPager.adapter = CustomViewPagerAdapter(supportFragmentManager, fragmentList)
     }
@@ -99,6 +109,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         Log.d("Main", myWeatherDetailObject.cityName + myWeatherDetailObject.temp_c)
 
         toolbar = supportActionBar!!
+
+
+
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
@@ -108,7 +121,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         fragmentList.add(weatherDetailFragment)
 
 
-        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+
+
+
+        //mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+
+
 
 
         viewPager.adapter?.notifyDataSetChanged()

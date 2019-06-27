@@ -18,6 +18,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.support.v4.content.ContextCompat
+import android.graphics.drawable.Drawable
+import com.google.android.gms.maps.model.BitmapDescriptor
+
+
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -48,6 +55,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     val appId = "7ac8041476369264714a77f37e2f4141"
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
         //addMarkerWithDetails(myWeatherDetailObject)
+        addMarkerWithDetails(myWeatherDetailObject)
     }
 
     override fun onMapLongClick(p0: LatLng) {
@@ -80,12 +88,33 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
+
+
+        var icon: Int = R.drawable.ic_cloud_white_24dp
+
+        when(myWeatherDetailObject.weather){
+            "Clouds" -> icon = R.drawable.ic_cloud_white_24dp
+            "Clear" -> icon = R.drawable.ic_wb_sunny_white_24dp
+            "Rain" -> icon = R.drawable.ic_rain_white_24dp
+        }
+
+
         mMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(titleString)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+            .icon(bitmapDescriptorFromVector(this.requireContext(), icon)))
     }
 
+    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
+        vectorDrawable!!.setBounds(0, 0, vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight)
+        val bitmap =
+            Bitmap.createBitmap(vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 
 
 

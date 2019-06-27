@@ -106,6 +106,7 @@ class WeatherDetailFragment : Fragment() {
         when(myWeatherDetailObject.weather){
             "Clear" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_wb_sunny_white_24dp)
             "Clouds" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_cloud_white_24dp)
+            "Rain" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_rain_white_24dp)
         }
     }
 }
