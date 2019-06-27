@@ -41,7 +41,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
     val appId = "7ac8041476369264714a77f37e2f4141"
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
-        addMarkerWithDetails(myWeatherDetailObject)
+        //addMarkerWithDetails(myWeatherDetailObject)
     }
 
     override fun onMapLongClick(p0: LatLng) {
@@ -221,4 +221,5 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
                 }
             }
     }
+
 }

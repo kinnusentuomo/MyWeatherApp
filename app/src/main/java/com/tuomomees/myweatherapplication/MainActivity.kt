@@ -34,9 +34,14 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     lateinit var lastLatLng: LatLng
 
+    lateinit var listFragment: WeatherDetailListFragment
+    lateinit var mapFragment: MapViewFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -49,8 +54,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         weatherDetailObjectList = ArrayList()
         //fragmentList.add(WeatherDetailFragment())
 
-        fragmentList.add(MapViewFragment())
-        fragmentList.add(WeatherDetailListFragment())
+        listFragment = WeatherDetailListFragment()
+        mapFragment = MapViewFragment()
+
+        fragmentList.add(mapFragment)
+        fragmentList.add(listFragment)
 
 
         viewPager.adapter = CustomViewPagerAdapter(supportFragmentManager, fragmentList)
@@ -74,6 +82,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         viewPager.adapter?.notifyDataSetChanged()
 */
 
+        val ft = supportFragmentManager.beginTransaction()
+        ft.detach(listFragment)
+        ft.attach(listFragment)
+        ft.commit()
+
         viewPager.adapter?.notifyDataSetChanged()
 
         Log.d(TAG, "added fragment to list")
@@ -93,6 +106,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         weatherDetailFragment.arguments = fragmentArgs
 
         fragmentList.add(weatherDetailFragment)
+
+        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
 
 
         viewPager.adapter?.notifyDataSetChanged()
@@ -202,5 +217,10 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
 
+    }
+
+
+    fun addMarker(myWeatherDetailObject: MyWeatherDetailObject){
+        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
     }
 }
