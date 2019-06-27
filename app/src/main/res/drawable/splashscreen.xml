@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+            android:opacity="opaque" android:layout_height="match_parent" android:layout_width="match_parent">
+    <item android:drawable="@drawable/background_image"/>
+
+    <item
+            android:gravity="center"
+            android:height="10sp"
+            android:width="10dp">
+        <bitmap
+                android:gravity="center"
+                android:src="@drawable/tuomomees_app_lab_logo_splashscreen" />
+    </item>
+</layer-list>
