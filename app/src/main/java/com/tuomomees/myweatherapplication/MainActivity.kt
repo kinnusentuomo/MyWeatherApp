@@ -14,18 +14,11 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Toolbar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import kotlinx.android.synthetic.main.fragment_map_view.*
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -45,16 +38,20 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         //requestWindowFeature(Window.FEATURE_NO_TITLE)
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
 
         setContentView(R.layout.activity_main)
 
 
+
+
         supportActionBar?.hide()
+
+        toolbar = supportActionBar!!
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -79,7 +76,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     }
 
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
+
+
+
         weatherDetailObjectList.add(myWeatherDetailObject)
+
 /*
 
         val weatherDetailListFragment = WeatherDetailListFragment()
@@ -92,10 +93,17 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         viewPager.adapter?.notifyDataSetChanged()
 */
 
-        val ft = supportFragmentManager.beginTransaction()
-        ft.detach(listFragment)
-        ft.attach(listFragment)
-        ft.commit()
+
+        try{
+            val ft = supportFragmentManager.beginTransaction()
+            ft.detach(listFragment)
+            ft.attach(listFragment)
+            ft.commit()
+        }
+        catch(e: Exception){
+            Log.e(TAG, e.toString())
+        }
+
 
         viewPager.adapter?.notifyDataSetChanged()
 
@@ -108,12 +116,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         Log.d("Main", myWeatherDetailObject.cityName + myWeatherDetailObject.temp_c)
 
-        toolbar = supportActionBar!!
 
-
-
-        val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
-        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         val weatherDetailFragment = WeatherDetailFragment()
         weatherDetailFragment.arguments = fragmentArgs
