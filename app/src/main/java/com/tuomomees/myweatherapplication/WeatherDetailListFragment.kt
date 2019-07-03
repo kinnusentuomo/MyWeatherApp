@@ -1,28 +1,23 @@
 package com.tuomomees.myweatherapplication
 
-import android.app.Activity
 import android.content.Context
-import android.database.DataSetObserver
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.NonNull
 import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.custom_list_view_layout.*
-import org.w3c.dom.Text
 import java.util.*
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-
 
 /**
  * A simple [Fragment] subclass.
@@ -189,10 +184,6 @@ class WeatherDetailListFragment : Fragment() {
 
         private val inflater: LayoutInflater
                 = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-
-
-
     }
 }
 

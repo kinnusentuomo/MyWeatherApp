@@ -14,6 +14,8 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -31,7 +33,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     lateinit var lastLatLng: LatLng
-
     lateinit var listFragment: WeatherDetailListFragment
     lateinit var mapFragment: MapViewFragment
 
@@ -42,9 +43,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_main)
-
-
-
 
         supportActionBar?.hide()
 
@@ -123,13 +121,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fragmentList.add(weatherDetailFragment)
 
-
-
-
-
         //mapFragment.addMarkerWithDetails(myWeatherDetailObject)
-
-
 
 
         viewPager.adapter?.notifyDataSetChanged()
@@ -164,9 +156,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         }
         return fragmentList.get(0)
     }
-
-
-
 
     //Added
     lateinit var fusedLocationClient: FusedLocationProviderClient
