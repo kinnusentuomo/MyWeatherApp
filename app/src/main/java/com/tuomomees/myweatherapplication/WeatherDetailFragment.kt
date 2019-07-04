@@ -102,11 +102,13 @@ class WeatherDetailFragment : Fragment() {
         view.findViewById<TextView>(R.id.textViewTemperature).text = "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         view.findViewById<TextView>(R.id.textViewHumidity).text = myWeatherDetailObject.humidity.toString() + "%"
         view.findViewById<TextView>(R.id.textViewWindSpeed).text = myWeatherDetailObject.windSpeed.toString() + "m/s"
+        view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(myWeatherDetailObject.icon)
 
+        /*
         when(myWeatherDetailObject.weather){
             "Clear" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_wb_sunny_white_24dp)
             "Clouds" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_cloud_white_24dp)
             "Rain" -> view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(R.drawable.ic_rain_white_24dp)
-        }
+        }*/
     }
 }

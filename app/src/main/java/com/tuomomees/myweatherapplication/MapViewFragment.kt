@@ -81,27 +81,28 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         weatherDetailGetterThread.call()
     }
 
-
     fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){
 
 
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
+
+        /*
         var icon: Int = R.drawable.ic_cloud_white_24dp
 
         when(myWeatherDetailObject.weather){
             "Clouds" -> icon = R.drawable.ic_cloud_white_24dp
             "Clear" -> icon = R.drawable.ic_wb_sunny_white_24dp
             "Rain" -> icon = R.drawable.ic_rain_white_24dp
-        }
+        }*/
 
 
         mMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(titleString)
             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-            .icon(bitmapDescriptorFromVector(this.requireContext(), icon)))
+            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
