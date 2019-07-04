@@ -27,4 +27,15 @@
 
 
 
+
+
+    <!-- Widget textview style -->
+    <style name="WidgetTextViewStyle">
+        <item name="android:fontFamily">@font/vertigo</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorHint">@color/colorPrimaryDark</item>
+        <item name="android:gravity">start</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
 </resources>

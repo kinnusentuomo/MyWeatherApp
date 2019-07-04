@@ -14,13 +14,14 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
+import android.content.Intent
+
+
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -176,6 +177,15 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
                 weatherDetailGetterThread.call()
                 lastLatLng = LatLng(myLocation.latitude, myLocation.longitude)
+
+                val intent = Intent(this, SimpleWeatherWidget::class.java)
+                intent.putExtra("last_location", myLocation)
+                sendBroadcast(intent)
+
+
+                addSharedPref("last_location_lat", myLocation.latitude)
+                addSharedPref("last_location_lon", myLocation.longitude)
+
             }
     }
 
@@ -200,11 +210,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                         RECORD_REQUEST_CODE)
     }
 
-    fun addSharedPref(key: String, item: Float){
+    fun addSharedPref(key: String, item: Double){
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPref.edit()
 
-        editor.putFloat(key, item)
+        editor.putFloat(key, item.toFloat())
         editor.apply()
     }
 
