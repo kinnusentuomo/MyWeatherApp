@@ -10,4 +10,4 @@ Ominaisuudet
 * Service, joka tarkistaa sään tilan nykyisestä olinpaikasta joka 60. minuutti. Mikäli olinpaikassa on sateista, service lähettää notifikaation sään tilasta.
 
 
-![alt text](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png)
+![alt text](https://github.com/tuomomees/MyWeatherApp/blob/master/app/src/main/res/drawable/background_image.9.png "BG")
