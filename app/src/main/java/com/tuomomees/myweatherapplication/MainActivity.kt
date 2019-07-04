@@ -1,5 +1,7 @@
 package com.tuomomees.myweatherapplication
 
+import android.app.Notification
+import android.app.NotificationChannel
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -20,6 +22,15 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 import android.content.Intent
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
+import android.os.Build
+import android.support.annotation.RequiresApi
+import android.support.v4.content.ContextCompat.getSystemService
 
 
 
@@ -37,6 +48,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     lateinit var listFragment: WeatherDetailListFragment
     lateinit var mapFragment: MapViewFragment
 
+    private var notificationManager: NotificationManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,6 +57,15 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_main)
+
+
+
+        createNotification(R.drawable.ic_cloud_white_24dp, "terve", "terve")
+
+
+        notificationManager =
+            getSystemService(
+                Context.NOTIFICATION_SERVICE) as NotificationManager
 
         supportActionBar?.hide()
 
@@ -113,9 +135,13 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         val fragmentArgs = Bundle()
         fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
+
+
+
+        createNotification(WeatherIcon().getIcon(myWeatherDetailObject.weather), myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
+
+
         Log.d("Main", myWeatherDetailObject.cityName + myWeatherDetailObject.temp_c)
-
-
 
         val weatherDetailFragment = WeatherDetailFragment()
         weatherDetailFragment.arguments = fragmentArgs
@@ -124,8 +150,53 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         //mapFragment.addMarkerWithDetails(myWeatherDetailObject)
 
-
         viewPager.adapter?.notifyDataSetChanged()
+
+
+    }
+
+
+
+
+
+    fun createNotification(icon: Int, title: String, message: String){
+
+
+        val channelID = "notifikaatioKanava"
+
+        createNotificationChannel(channelID, "tämän tuubin kautta ammutaan notifikaatioita", channelID)
+
+
+
+
+
+        Log.d(TAG, message)
+
+
+        val notification = Notification.Builder(applicationContext,
+            channelID)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setSmallIcon(icon)
+            .setChannelId(channelID)
+            .build()
+
+        notificationManager?.notify(0, notification)
+
+    }
+
+    private fun createNotificationChannel(name: String, description: String, id: String) {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(id, name, importance).apply {
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -164,15 +235,14 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         var myLocation: Location = Location("Washington")
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location ->
-                Log.d("LastLongitude", location.longitude.toString())
-                Log.d("LastLatitude", location.latitude.toString())
+            .addOnSuccessListener { location: Location ->
+                //Log.d("LastLongitude", location.longitude.toString())
+                //Log.d("LastLatitude", location.latitude.toString())
                 myLocation = location
             }
 
         fusedLocationClient.lastLocation
             .addOnCompleteListener{
-
                 val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
                 weatherDetailGetterThread.call()
