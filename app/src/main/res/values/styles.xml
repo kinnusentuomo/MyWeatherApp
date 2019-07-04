@@ -6,7 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
 
     </style>
 
@@ -26,4 +27,15 @@
 
 
 
+
+
+    <!-- Widget textview style -->
+    <style name="WidgetTextViewStyle">
+        <item name="android:fontFamily">@font/vertigo</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorHint">@color/colorPrimaryDark</item>
+        <item name="android:gravity">start</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
 </resources>

@@ -88,8 +88,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
-
-
         var icon: Int = R.drawable.ic_cloud_white_24dp
 
         when(myWeatherDetailObject.weather){

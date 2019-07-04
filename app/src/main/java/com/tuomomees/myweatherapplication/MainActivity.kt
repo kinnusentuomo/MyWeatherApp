@@ -14,18 +14,14 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Toolbar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import kotlinx.android.synthetic.main.fragment_map_view.*
+import java.lang.Exception
+import android.content.Intent
+
+
 
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
@@ -38,23 +34,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     lateinit var lastLatLng: LatLng
-
     lateinit var listFragment: WeatherDetailListFragment
     lateinit var mapFragment: MapViewFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         //requestWindowFeature(Window.FEATURE_NO_TITLE)
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-
         setContentView(R.layout.activity_main)
 
-
         supportActionBar?.hide()
+
+        toolbar = supportActionBar!!
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -79,7 +75,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     }
 
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
+
+
+
         weatherDetailObjectList.add(myWeatherDetailObject)
+
 /*
 
         val weatherDetailListFragment = WeatherDetailListFragment()
@@ -92,10 +92,17 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         viewPager.adapter?.notifyDataSetChanged()
 */
 
-        val ft = supportFragmentManager.beginTransaction()
-        ft.detach(listFragment)
-        ft.attach(listFragment)
-        ft.commit()
+
+        try{
+            val ft = supportFragmentManager.beginTransaction()
+            ft.detach(listFragment)
+            ft.attach(listFragment)
+            ft.commit()
+        }
+        catch(e: Exception){
+            Log.e(TAG, e.toString())
+        }
+
 
         viewPager.adapter?.notifyDataSetChanged()
 
@@ -108,25 +115,14 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         Log.d("Main", myWeatherDetailObject.cityName + myWeatherDetailObject.temp_c)
 
-        toolbar = supportActionBar!!
 
-
-
-        val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
-        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         val weatherDetailFragment = WeatherDetailFragment()
         weatherDetailFragment.arguments = fragmentArgs
 
         fragmentList.add(weatherDetailFragment)
 
-
-
-
-
         //mapFragment.addMarkerWithDetails(myWeatherDetailObject)
-
-
 
 
         viewPager.adapter?.notifyDataSetChanged()
@@ -162,9 +158,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         return fragmentList.get(0)
     }
 
-
-
-
     //Added
     lateinit var fusedLocationClient: FusedLocationProviderClient
     fun getLastLocation(){
@@ -184,6 +177,15 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
                 weatherDetailGetterThread.call()
                 lastLatLng = LatLng(myLocation.latitude, myLocation.longitude)
+
+                val intent = Intent(this, SimpleWeatherWidget::class.java)
+                intent.putExtra("last_location", myLocation)
+                sendBroadcast(intent)
+
+
+                addSharedPref("last_location_lat", myLocation.latitude)
+                addSharedPref("last_location_lon", myLocation.longitude)
+
             }
     }
 
@@ -208,11 +210,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                         RECORD_REQUEST_CODE)
     }
 
-    fun addSharedPref(key: String, item: Float){
+    fun addSharedPref(key: String, item: Double){
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPref.edit()
 
-        editor.putFloat(key, item)
+        editor.putFloat(key, item.toFloat())
         editor.apply()
     }
 

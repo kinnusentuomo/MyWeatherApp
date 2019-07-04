@@ -8,17 +8,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.custom_list_view_layout.*
 import java.util.*
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-
 
 /**
  * A simple [Fragment] subclass.
@@ -36,8 +35,8 @@ class WeatherDetailListFragment : Fragment() {
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     private var listItems: ArrayList<String>? = null
 
-
-    private lateinit var adapter: ArrayAdapter<String>
+    //private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var adapter: MyAdapter
 
     val TAG = "WeatherListFragment"
 
@@ -46,11 +45,6 @@ class WeatherDetailListFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-            //weatherDetailObjectList = it.getParcelableArrayList("sentWeatherDetailObjectList")
-
-
-
-
         }
     }
 
@@ -72,10 +66,10 @@ class WeatherDetailListFragment : Fragment() {
 
         Log.d(TAG, listView.toString())
 
-
         Log.d(TAG, "listItems" + listItems.toString())
         //adapter = ArrayAdapter(this.requireContext(), R.layout.simple_list_item_1, listItems)
-        adapter = ArrayAdapter(this.requireContext(), R.layout.custom_list_view_layout, R.id.textView2, listItems)
+        //adapter = ArrayAdapter(this.requireContext(), R.layout.custom_list_view_layout, R.id.textViewListText, listItems)
+        adapter = MyAdapter(this.requireActivity(), weatherDetailObjectList)
         listView.adapter = adapter
 
         if (listView != null) {
@@ -154,4 +148,45 @@ class WeatherDetailListFragment : Fragment() {
                 }
             }
     }
+
+    class MyAdapter(
+        context: Context,
+        private val myWeatherDetailObjectList: List<MyWeatherDetailObject>) : BaseAdapter() {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
+
+            rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList.get(position).cityName + " " + "%.0f".format(myWeatherDetailObjectList.get(position).temp_c) + "°C"
+
+            var drawable: Int = R.drawable.ic_cloud_white_24dp
+
+            when(myWeatherDetailObjectList.get(position).weather){
+                "Clouds" -> drawable = R.drawable.ic_cloud_white_24dp
+                "Clear" -> drawable = R.drawable.ic_wb_sunny_white_24dp
+                "Rain" -> drawable = R.drawable.ic_rain_white_24dp
+            }
+
+            rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(drawable)
+
+            return rowView
+        }
+
+        override fun getItem(position: Int): Any {
+            return myWeatherDetailObjectList.get(position)
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getCount(): Int {
+            return myWeatherDetailObjectList.size
+        }
+
+        private val inflater: LayoutInflater
+                = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    }
 }
+
+
+
+

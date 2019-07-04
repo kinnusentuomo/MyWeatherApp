@@ -11,7 +11,7 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:layout_marginLeft="5dp"
-            android:id="@+id/textView2"
+            android:id="@+id/textViewListText"
             android:textSize="30sp"
             android:textColor="@color/colorWhite" android:layout_marginStart="5dp"/>
 
@@ -19,5 +19,5 @@
     android:layout_gravity="end"
     android:layout_width="40sp" android:layout_height="40sp"
     android:id="@+id/imageViewListIcon"
-    android:background="@drawable/ic_cloud_white_24dp"/>
+    />
 </LinearLayout>
