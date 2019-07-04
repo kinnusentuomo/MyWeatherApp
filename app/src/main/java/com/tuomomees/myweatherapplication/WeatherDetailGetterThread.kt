@@ -94,6 +94,16 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     myWeatherDetailObject.cityName = cityName.toString()
 
 
+                    var icon: Int = R.drawable.ic_cloud_white_24dp
+
+                    when(weather){
+                        "Clouds" -> icon = R.drawable.ic_cloud_white_24dp
+                        "Clear" -> icon = R.drawable.ic_wb_sunny_white_24dp
+                        "Rain" -> icon = R.drawable.ic_rain_white_24dp
+                    }
+
+                    myWeatherDetailObject.icon = icon
+
                     Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
                     stopThread(true)
                     gettingData = true

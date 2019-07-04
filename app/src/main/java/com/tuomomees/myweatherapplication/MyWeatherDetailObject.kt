@@ -11,6 +11,7 @@ class MyWeatherDetailObject() : Parcelable {
     var longitude: Double = 0.0
     var weather: String = ""
     var windSpeed: Double = 0.0
+    var icon: Int = R.drawable.ic_cloud_white_24dp
 
     constructor(parcel: Parcel) : this() {
         cityName = parcel.readString()
