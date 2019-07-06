@@ -82,6 +82,7 @@ class WeatherDetailFragment : Fragment() {
 
     interface OnFragmentInteractionListener {
         fun onFragmentInteraction(uri: Uri)
+        fun onRequestPermissionsResult(requestCode: Any, permissions: Any, grantResults: Any)
     }
 
     companion object {

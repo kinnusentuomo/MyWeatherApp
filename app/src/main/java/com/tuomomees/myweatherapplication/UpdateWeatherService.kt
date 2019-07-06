@@ -14,6 +14,9 @@ import android.widget.Toast
 import android.support.v4.os.HandlerCompat.postDelayed
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.TimeUnit
+import android.support.annotation.NonNull
+
+
 
 
 class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
@@ -123,5 +126,40 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+/* //Modern way Android O ++
+    inner class MyJobCreator : JobCreator {
+
+        @Nullable
+        fun create(tag: String): Job? {
+            when (tag) {
+                MySyncJob.TAG -> return MySyncJob()
+                else -> return null
+            }
+        }
+    }
+
+    inner class MySyncJob : Job() {
+
+        protected fun onRunJob(params: Params): Result {
+            //
+            // run your job here
+            //
+            //
+            return Result.SUCCESS
+        }
+
+        companion object {
+
+            val TAG = "my_job_tag"
+
+            fun scheduleJob() {
+                JobRequest.Builder(MySyncJob.TAG)
+                    .setExecutionWindow(30_000L, 40_000L) //Every 30 seconds for 40 seconds
+                    .build()
+                    .schedule()
+            }
+        }
+    }*/
 
 }

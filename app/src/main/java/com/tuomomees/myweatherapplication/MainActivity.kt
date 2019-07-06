@@ -1,11 +1,9 @@
 package com.tuomomees.myweatherapplication
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,6 +21,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -31,10 +30,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
 
+
     val appId = "7ac8041476369264714a77f37e2f4141"
     private var TAG = "MainActivity"
     lateinit var toolbar: ActionBar
-    private val RECORD_REQUEST_CODE = 101
+    private val LOCATION_REQUEST_CODE = 1706
     private lateinit var viewPager: ViewPager
     private lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
@@ -52,16 +52,99 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
+        //init fusedLocation
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //Setup location permission
+        setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
+
         notificationManager =
             getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
 
         initActionBar()
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getLastLocation() //does not work when using virtual device
+
+        //getLastLocation() //does not work when using virtual device
         initFragments()
-        startService(Intent(this, UpdateWeatherService::class.java))
     }
+
+    private fun setupPermission(wantedPermission: String, requestCode: Int) {
+        val permission = ContextCompat.checkSelfPermission(this,
+            wantedPermission)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to " + permission + " denied!")
+            requestWantedPermission(wantedPermission, requestCode)
+        }
+        else{
+            Log.i(TAG, "Permission to " + permission + " granted!")
+            getLastLocation()
+            startService(Intent(this, UpdateWeatherService::class.java))
+        }
+    }
+
+    private fun requestWantedPermission(wantedPermission: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(this,
+            arrayOf(wantedPermission),
+            requestCode)
+
+        Log.d(TAG, "Requesting permission: " + wantedPermission + " with code: " + requestCode)
+
+    }
+
+
+
+
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Any, permissions: Any, grantResults: Any) {
+
+        Log.d(TAG, "onRequestPermissionResult")
+    }
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+
+        Log.d(TAG, "onRequestPermissionResult")
+        when (requestCode) {
+            LOCATION_REQUEST_CODE -> {
+
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Permission has been denied by user")
+                    Toast.makeText(this, "Permission has to be granted for proper app usage.", Toast.LENGTH_LONG).show()
+                    finish()
+                } else {
+                    Log.d(TAG, "Permission has been granted by user")
+                    getLastLocation() //does not work when using virtual device
+
+                }
+            }
+        }
+    }
+
+    /*
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            LOCATION_REQUEST_CODE -> {
+
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    //Log.i(TAG, "Permission has been denied by user")
+                    //finish()
+                } else {
+                    //Log.i(TAG, "Permission has been granted by user")
+                    getLastLocation() //does not work when using virtual device
+
+                }
+            }
+        }
+
+
+    }*/
+
+
+
 
 
     //setup bottom navigation and set notification bar as transparent
@@ -135,7 +218,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fragmentList.add(weatherDetailFragment)
 
-        //mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
         viewPager.adapter?.notifyDataSetChanged()
     }
 
@@ -246,7 +329,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
          ActivityCompat.requestPermissions(this,
                         arrayOf(permission),
-                        RECORD_REQUEST_CODE)
+             LOCATION_REQUEST_CODE)
     }
 
     fun addSharedPref(key: String, item: Double){

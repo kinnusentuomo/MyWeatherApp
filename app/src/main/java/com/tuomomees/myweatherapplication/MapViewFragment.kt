@@ -97,12 +97,21 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
             "Rain" -> icon = R.drawable.ic_rain_white_24dp
         }*/
 
-
+/*
         mMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(titleString)
             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))*/
+
+        mMap.setOnMapLoadedCallback {
+            mMap.addMarker(MarkerOptions()
+            .position(latLng)
+            .title(titleString)
+            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
             .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
+            moveCamera(latLng)
+        }
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
