@@ -19,6 +19,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -28,7 +30,19 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener{
+class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener,
+    TextWatcher {
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+
+    }
 
 
     val appId = "7ac8041476369264714a77f37e2f4141"
@@ -51,6 +65,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //requestWindowFeature(Window.FEATURE_NO_TITLE)
         //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
+
+
+        editTextCity.addTextChangedListener(this)
 
         //init fusedLocation
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

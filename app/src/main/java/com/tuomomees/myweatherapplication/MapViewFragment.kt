@@ -193,7 +193,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
 
     fun moveCamera(latLng: LatLng = LatLng(0.0, 0.0)) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
 
