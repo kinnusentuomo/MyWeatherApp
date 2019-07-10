@@ -2,6 +2,7 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -14,13 +15,10 @@ import javax.net.ssl.HttpsURLConnection
 class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport): Thread(),
     Callable<MyWeatherDetailObject> {
 
-
-
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject)
         fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
-
 
     val TAG = "WeatherDetailThread"
 
@@ -29,6 +27,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
     lateinit var myWeatherDetailObject: MyWeatherDetailObject
 
     override fun call(): MyWeatherDetailObject {
+
         myWeatherDetailObject = MyWeatherDetailObject()
         while(running){
 
@@ -42,6 +41,8 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
         }
         Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
+
+
         return myWeatherDetailObject
     }
 
@@ -84,7 +85,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                         weather = item.get("main").toString()
                     }
 
-
                     myWeatherDetailObject.humidity = humidity.toDouble()
                     myWeatherDetailObject.temp_c = temp_c
                     myWeatherDetailObject.weather = weather
@@ -111,7 +111,10 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     threadObserver.ThreadReady(myWeatherDetailObject)
                     threadObserver.addDataToList(myWeatherDetailObject)
 
-                }, Response.ErrorListener { stopThread(true)})
+                }, Response.ErrorListener {
+                    Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+                    threadObserver.ThreadReady(myWeatherDetailObject)
+                    stopThread(true)})
             queue.add(stringRequest)
             //       }
 

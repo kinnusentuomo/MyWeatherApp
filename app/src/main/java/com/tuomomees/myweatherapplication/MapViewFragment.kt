@@ -22,8 +22,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.support.v4.content.ContextCompat
 import android.graphics.drawable.Drawable
+import android.widget.ProgressBar
 import com.google.android.gms.maps.model.BitmapDescriptor
-
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,6 +57,14 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
         //addMarkerWithDetails(myWeatherDetailObject)
         addMarkerWithDetails(myWeatherDetailObject)
+
+
+        (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
+
+
+
+
+
     }
 
     override fun onMapLongClick(p0: LatLng) {
@@ -76,6 +85,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     }
 
     fun queryWithLocation(location: Location){
+        (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
         val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this)
         weatherDetailGetterThread.call()
@@ -104,14 +114,23 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
             .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))*/
 
-        mMap.setOnMapLoadedCallback {
-            mMap.addMarker(MarkerOptions()
-            .position(latLng)
-            .title(titleString)
-            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
-            moveCamera(latLng)
-        }
+
+            try{
+                mMap.setOnMapLoadedCallback {
+                    mMap.addMarker(MarkerOptions()
+                        .position(latLng)
+                        .title(titleString)
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
+                    moveCamera(latLng)
+                }
+            }
+            catch (e: Exception){
+                Log.e(TAG, e.toString())
+            }
+
+
+
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -136,7 +155,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         mMap = p0
 
-        mMap.setOnMapLongClickListener(this);
+        mMap.setOnMapLongClickListener(this)
 
 
         try {

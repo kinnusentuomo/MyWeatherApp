@@ -1,23 +1,14 @@
 package com.tuomomees.myweatherapplication
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.content.Intent
+import android.location.Location
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.RemoteViews
-import android.content.Intent.getIntent
-import android.content.Intent.getIntentOld
-import android.os.Build
-import android.support.v4.app.NotificationCompat.getExtras
-import android.os.Bundle
-import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat.getSystemService
-import com.google.android.gms.maps.model.LatLng
-
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 /**
  * Implementation of App Widget functionality.
@@ -25,13 +16,27 @@ import com.google.android.gms.maps.model.LatLng
 class SimpleWeatherWidget : AppWidgetProvider() {
 
     val TAG = "WidgetProvider"
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        // There may be multiple widgets active, so update all of them
-        for (appWidgetId in appWidgetIds) {
-            Log.w(TAG, "onUpdate method called")
-            updateAppWidget(context, appWidgetManager, appWidgetId)
-        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location ->
+                lastLocation = location
+            }
+
+        fusedLocationClient.lastLocation
+            .addOnCompleteListener{
+
+                // There may be multiple widgets active, so update all of them
+                for (appWidgetId in appWidgetIds) {
+                    Log.w(TAG, "onUpdate method called")
+                    updateAppWidget(context, appWidgetManager, appWidgetId, lastLocation)
+                }
+            }
     }
 
     override fun onEnabled(context: Context) {
@@ -76,16 +81,17 @@ class SimpleWeatherWidget : AppWidgetProvider() {
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
-            appWidgetId: Int
+            appWidgetId: Int,
+            lastLocation: Location
         ) {
-
-            myWidgetId = appWidgetId
+            //myWidgetId = appWidgetId
             myAppWidgetManager = appWidgetManager
 
-            val lat = getSharedPref("last_location_lat", context)
-            val lon = getSharedPref("last_location_lon", context)
+            //val lat = getSharedPref("last_location_lat", context)
+            //val lon = getSharedPref("last_location_lon", context)
 
-            val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
+            //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
+            val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
             val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this)
             weatherDetailGetterThread.call()
 
