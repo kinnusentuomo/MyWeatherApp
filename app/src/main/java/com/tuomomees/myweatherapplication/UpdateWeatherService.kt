@@ -6,17 +6,16 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import android.support.v4.os.HandlerCompat.postDelayed
-import kotlinx.android.synthetic.main.activity_main.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import java.util.*
 import java.util.concurrent.TimeUnit
-import android.support.annotation.NonNull
-
-
 
 
 class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
@@ -24,15 +23,13 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
     }
 
-    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
+    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
         Log.d("Service", "Weather status: " + myWeatherDetailObject.weather)
-        if(myWeatherDetailObject.weather == "Rain"){
-            createNotification(myWeatherDetailObject.icon, "Watch out, it is rainy in: " + myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
-        }
+        //if(myWeatherDetailObject.weather == "Rain"){
+            createNotification(myWeatherDetailObject.icon, "Watch out, it is rainy in " + myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
+        //}
     }
-
-
 
     val appId = "7ac8041476369264714a77f37e2f4141"
     private lateinit var notificationManager: NotificationManager
@@ -41,12 +38,24 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
     var handler: Handler? = null
     var runnable: Runnable? = null
 
+    lateinit var fusedLocationClient: FusedLocationProviderClient
+    lateinit var lastLocation: Location
 
     override fun onCreate() {
         Toast.makeText(this, "Service created!", Toast.LENGTH_LONG).show()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+
+
+
         val lat = SimpleWeatherWidget.getSharedPref("last_location_lat", this)
         val lon = SimpleWeatherWidget.getSharedPref("last_location_lon", this)
 
+
+        notificationManager =
+            getSystemService(
+                Context.NOTIFICATION_SERVICE) as NotificationManager
+/*
         handler = Handler()
         runnable = Runnable {
             //Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show()
@@ -65,8 +74,36 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
             handler!!.postDelayed(runnable, /*10000*/ TimeUnit.MINUTES.toMillis(60))
         }
 
-        handler!!.postDelayed(runnable, TimeUnit.MINUTES.toMillis(60))
+        handler!!.postDelayed(runnable, TimeUnit.MINUTES.toMillis(60))*/
+
+        getData()
     }
+
+
+
+    private fun getData(){
+        val t = Timer()
+        val tt = object : TimerTask() {
+
+            override fun run() {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location ->
+                        lastLocation = location
+                    }
+
+                fusedLocationClient.lastLocation
+                    .addOnCompleteListener{
+                        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
+                        weatherDetailGetterThread.call()
+                    }
+            }
+
+        }
+        t.schedule(tt, /*10 * 1000*/ TimeUnit.MINUTES.toMillis(1)) //Schedule to run tt (TimerTask) again after 10 seconds
+    }
+
+
 
     override fun onBind(intent: Intent): IBinder? {
 

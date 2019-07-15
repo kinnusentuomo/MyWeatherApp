@@ -12,11 +12,11 @@ import java.net.URL
 import java.util.concurrent.Callable
 import javax.net.ssl.HttpsURLConnection
 
-class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport): Thread(),
+class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, var markerId: Int = 0): Thread(),
     Callable<MyWeatherDetailObject> {
 
     interface ThreadReport {
-        fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject)
+        fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
         fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
 
@@ -94,6 +94,11 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     myWeatherDetailObject.cityName = cityName.toString()
 
 
+                    if(myWeatherDetailObject.cityName == ""){
+                        myWeatherDetailObject.cityName = "lat " + lat.toString() + "° lon " + lon.toString() + "°"
+                    }
+
+
                     var icon: Int = R.drawable.ic_cloud_white_24dp
 
                     when(weather){
@@ -108,12 +113,12 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     stopThread(true)
                     gettingData = true
 
-                    threadObserver.ThreadReady(myWeatherDetailObject)
+                    threadObserver.ThreadReady(myWeatherDetailObject, markerId)
                     threadObserver.addDataToList(myWeatherDetailObject)
 
                 }, Response.ErrorListener {
                     Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
-                    threadObserver.ThreadReady(myWeatherDetailObject)
+                    threadObserver.ThreadReady(myWeatherDetailObject, markerId)
                     stopThread(true)})
             queue.add(stringRequest)
             //       }

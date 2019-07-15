@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     lateinit var toolbar: ActionBar
     private val LOCATION_REQUEST_CODE = 1706
     private lateinit var viewPager: ViewPager
-    private lateinit var fragmentList: ArrayList<Fragment>
+    lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     lateinit var lastLatLng: LatLng
     lateinit var listFragment: WeatherDetailListFragment
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         else{
             Log.i(TAG, "Permission to " + permission + " granted!")
             getLastLocation()
-            startService(Intent(this, UpdateWeatherService::class.java))
+            //startService(Intent(this, UpdateWeatherService::class.java))
         }
     }
 
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         Log.d(TAG, "added fragment to list")
     }
 
-    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
+    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
         val fragmentArgs = Bundle()
         fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
@@ -300,13 +300,16 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         var myLocation: Location = Location("Washington")
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location ->
+            .addOnSuccessListener { location: Location? ->
                 //Log.d("LastLongitude", location.longitude.toString())
                 //Log.d("LastLatitude", location.latitude.toString())
 
 
+                if (location != null) {
+                    myLocation = location
+                }
 
-                myLocation = location
+
             }
 
         fusedLocationClient.lastLocation
