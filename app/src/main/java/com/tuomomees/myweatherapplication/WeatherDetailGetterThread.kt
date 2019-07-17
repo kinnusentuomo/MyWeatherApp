@@ -2,6 +2,7 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -11,16 +12,13 @@ import java.net.URL
 import java.util.concurrent.Callable
 import javax.net.ssl.HttpsURLConnection
 
-class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport): Thread(),
+class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, var markerId: Int = 0): Thread(),
     Callable<MyWeatherDetailObject> {
 
-
-
     interface ThreadReport {
-        fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject)
+        fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
         fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
-
 
     val TAG = "WeatherDetailThread"
 
@@ -29,6 +27,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
     lateinit var myWeatherDetailObject: MyWeatherDetailObject
 
     override fun call(): MyWeatherDetailObject {
+
         myWeatherDetailObject = MyWeatherDetailObject()
         while(running){
 
@@ -42,6 +41,8 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
         }
         Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
+
+
         return myWeatherDetailObject
     }
 
@@ -84,7 +85,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                         weather = item.get("main").toString()
                     }
 
-
                     myWeatherDetailObject.humidity = humidity.toDouble()
                     myWeatherDetailObject.temp_c = temp_c
                     myWeatherDetailObject.weather = weather
@@ -92,6 +92,11 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     myWeatherDetailObject.latitude = lat
                     myWeatherDetailObject.longitude = lon
                     myWeatherDetailObject.cityName = cityName.toString()
+
+
+                    if(myWeatherDetailObject.cityName == ""){
+                        myWeatherDetailObject.cityName = "lat " + lat.toString() + "° lon " + lon.toString() + "°"
+                    }
 
 
                     var icon: Int = R.drawable.ic_cloud_white_24dp
@@ -108,10 +113,13 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     stopThread(true)
                     gettingData = true
 
-                    threadObserver.ThreadReady(myWeatherDetailObject)
+                    threadObserver.ThreadReady(myWeatherDetailObject, markerId)
                     threadObserver.addDataToList(myWeatherDetailObject)
 
-                }, Response.ErrorListener { stopThread(true)})
+                }, Response.ErrorListener {
+                    Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+                    threadObserver.ThreadReady(myWeatherDetailObject, markerId)
+                    stopThread(true)})
             queue.add(stringRequest)
             //       }
 

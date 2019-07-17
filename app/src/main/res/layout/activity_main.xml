@@ -11,6 +11,19 @@
 
         android:fitsSystemWindows="false">
 
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <ProgressBar
+
+                android:translationZ="999dp"
+                android:visibility="visible"
+                android:id="@+id/viewPagerProgressBar"
+                style="@style/ViewPagerProgressBarStyle"
+                android:progressDrawable="@drawable/custom_progress_bar"
+                android:layout_gravity="center"
+                android:layout_width="150sp"
+                android:layout_height="150sp"
+                />
+    </FrameLayout>
 
     <LinearLayout
             android:orientation="horizontal"
@@ -47,6 +60,7 @@
                 android:id="@+id/button" app:layout_constraintStart_toEndOf="@+id/editTextCity"
                 app:layout_constraintTop_toTopOf="parent"/>
     </LinearLayout>
+
 
 
     <android.support.v4.view.ViewPager

@@ -2,7 +2,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="@dimen/widget_margin"
-                android:background="@drawable/widget_background_drawable">
+                android:background="@drawable/widget_background_drawable"
+                android:foreground="@drawable/glossy_drawable"
+                android:foregroundGravity="center|fill">
+
 
 
     <TextView

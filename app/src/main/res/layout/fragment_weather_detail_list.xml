@@ -6,6 +6,8 @@
              tools:context=".WeatherDetailListFragment">
 
     <ListView
+
+
             android:id="@+id/weatherDetailListView"
 
             android:layout_width="match_parent"

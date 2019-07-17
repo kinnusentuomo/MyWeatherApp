@@ -14,16 +14,14 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.support.v4.content.ContextCompat
 import android.graphics.drawable.Drawable
-import com.google.android.gms.maps.model.BitmapDescriptor
-
+import android.nfc.Tag
+import android.widget.ProgressBar
+import com.google.android.gms.maps.model.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,42 +40,75 @@ private const val ARG_PARAM2 = "param2"
 class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
 
-
-
+    val appId = "7ac8041476369264714a77f37e2f4141"
     val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
+    lateinit var markerList: MutableList<Marker>
 
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
         //(activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
     }
 
-
-    val appId = "7ac8041476369264714a77f37e2f4141"
-    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject) {
+    override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
         //addMarkerWithDetails(myWeatherDetailObject)
-        addMarkerWithDetails(myWeatherDetailObject)
+
+
+        (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
+
+
+
+
+
+        markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
+        markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon))
+
+
+
+        (activity as MainActivity).addDataToList(myWeatherDetailObject)
+
+
+        val fragmentArgs = Bundle()
+        fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
+
+        val weatherDetailFragment = WeatherDetailFragment()
+        weatherDetailFragment.arguments = fragmentArgs
+
+        (activity as MainActivity).fragmentList.add(weatherDetailFragment)
+
+        (activity as MainActivity).viewPager.adapter?.notifyDataSetChanged()
     }
 
     override fun onMapLongClick(p0: LatLng) {
 
-        /*
-        mMap.addMarker(MarkerOptions()
+
+        val marker = mMap.addMarker(MarkerOptions()
             .position(p0)
             .title("Fetching weather information...")
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))*/
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+
+
+        markerList.add(marker)
+
+        val addedMarkerId = markerList.indexOf(marker)
+
+        Log.d(TAG, "marker id : " + addedMarkerId)
+
+        moveCamera(p0)
+
 
         Log.d(TAG, p0.toString())
 
         val location = Location("")
         location.longitude = p0.longitude
         location.latitude = p0.latitude
-        (activity as MainActivity).sendQueryWithLocation(location)
-        queryWithLocation(location)
+        //(activity as MainActivity).sendQueryWithLocation(location)
+        queryWithLocation(location, addedMarkerId)
     }
 
-    fun queryWithLocation(location: Location){
+    fun queryWithLocation(location: Location, markerId: Int){
+        (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
         val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
-        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this)
+        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this, markerId)
         weatherDetailGetterThread.call()
     }
 
@@ -97,12 +128,30 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
             "Rain" -> icon = R.drawable.ic_rain_white_24dp
         }*/
 
-
+/*
         mMap.addMarker(MarkerOptions()
             .position(latLng)
             .title(titleString)
             //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
+            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))*/
+
+
+            try{
+                mMap.setOnMapLoadedCallback {
+                    mMap.addMarker(MarkerOptions()
+                        .position(latLng)
+                        .title(titleString)
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
+                    moveCamera(latLng)
+                }
+            }
+            catch (e: Exception){
+                Log.e(TAG, e.toString())
+            }
+
+
+
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -127,7 +176,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         mMap = p0
 
-        mMap.setOnMapLongClickListener(this);
+        mMap.setOnMapLongClickListener(this)
+        markerList = ArrayList()
 
 
         try {
@@ -160,10 +210,10 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         var myLocation: Location = Location("")
         (activity as MainActivity).fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location ->
-                Log.d("LastLongitude", location.longitude.toString())
-                Log.d("LastLatitude", location.latitude.toString())
-                myLocation = location
+            .addOnSuccessListener { location : Location? ->
+                if (location != null) {
+                    myLocation = location
+                }
             }
 
         (activity as MainActivity).fusedLocationClient.lastLocation.addOnCompleteListener{
@@ -184,7 +234,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
 
     fun moveCamera(latLng: LatLng = LatLng(0.0, 0.0)) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
 

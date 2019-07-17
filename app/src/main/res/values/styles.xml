@@ -38,4 +38,13 @@
         <item name="android:gravity">start</item>
         <item name="android:textAlignment">textStart</item>
     </style>
+
+
+
+    <!-- Progressbar style -->
+    <style name="ViewPagerProgressBarStyle">
+        <item name="android:color">@color/colorWhite</item>
+        <item name="android:colorEdgeEffect">@color/cardview_dark_background</item>
+
+    </style>
 </resources>
