@@ -12,13 +12,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewPager
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.viewpager.widget.ViewPager
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private var TAG = "MainActivity"
     lateinit var toolbar: ActionBar
     private val LOCATION_REQUEST_CODE = 1706
-    private lateinit var viewPager: ViewPager
-    lateinit var fragmentList: ArrayList<Fragment>
+    private lateinit var viewPager: androidx.viewpager.widget.ViewPager
+    lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     private lateinit var lastLatLng: LatLng
     private lateinit var listFragment: WeatherDetailListFragment

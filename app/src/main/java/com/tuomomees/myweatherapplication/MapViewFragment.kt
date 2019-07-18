@@ -7,8 +7,8 @@ import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
+class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
 
     private val appId = "7ac8041476369264714a77f37e2f4141"
