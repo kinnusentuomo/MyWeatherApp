@@ -52,7 +52,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
     }
 
     fun getData() {
-        val myConnection = URL(queryString).openConnection() as HttpsURLConnection
+        //val myConnection = URL(queryString).openConnection() as HttpsURLConnection
         val myWeatherDetailObject = MyWeatherDetailObject()
 
             //        if (myConnection.responseCode == 200) {

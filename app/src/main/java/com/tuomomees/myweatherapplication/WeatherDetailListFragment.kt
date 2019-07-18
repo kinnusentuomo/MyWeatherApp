@@ -119,25 +119,20 @@ class WeatherDetailListFragment : Fragment() {
             }
     }
 
+
+    //Adapter for a single listview item, returns one listitem which has text and image
     class MyAdapter(
         context: Context,
         private val myWeatherDetailObjectList: List<MyWeatherDetailObject>) : BaseAdapter() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
 
-            rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList.get(position).temp_c) + "°C"
+            val formattedTemp = "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
+            val cityName = myWeatherDetailObjectList[position].cityName
+            val formattedString = "$cityName $formattedTemp"
 
-
-            /*
-            var drawable: Int = R.drawable.ic_cloud_white_24dp
-
-            when(myWeatherDetailObjectList.get(position).weather){
-                "Clouds" -> drawable = R.drawable.ic_cloud_white_24dp
-                "Clear" -> drawable = R.drawable.ic_wb_sunny_white_24dp
-                "Rain" -> drawable = R.drawable.ic_rain_white_24dp
-            }
-
-            rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(drawable)*/
+            //rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
+            rowView.findViewById<TextView>(R.id.textViewListText).text = formattedString
             rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(myWeatherDetailObjectList[position].icon)
 
             return rowView

@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var viewPager: ViewPager
     lateinit var fragmentList: ArrayList<Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
-    lateinit var lastLatLng: LatLng
-    lateinit var listFragment: WeatherDetailListFragment
-    lateinit var mapFragment: MapViewFragment
+    private lateinit var lastLatLng: LatLng
+    private lateinit var listFragment: WeatherDetailListFragment
+    private lateinit var mapFragment: MapViewFragment
 
     private var notificationManager: NotificationManager? = null
     lateinit var fusedLocationClient: FusedLocationProviderClient

@@ -6,8 +6,6 @@
                 android:foreground="@drawable/glossy_drawable"
                 android:foregroundGravity="center|fill">
 
-
-
     <TextView
             android:id="@+id/appwidget_text_cityname"
             style="@style/WhiteTextViewTheme"
@@ -69,4 +67,14 @@
             android:layout_marginStart="11dp"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/appwidget_text_cityname"/>
+    <TextView
+            android:id="@+id/appwidget_text_update_time"
+            style="@style/WidgetTextViewStyle"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:hint="updated 12:04"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageViewWidget" android:layout_alignParentStart="true"
+            android:layout_marginStart="3dp"/>
 </RelativeLayout>

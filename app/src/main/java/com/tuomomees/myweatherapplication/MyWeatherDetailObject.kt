@@ -14,12 +14,12 @@ class MyWeatherDetailObject() : Parcelable {
     var icon: Int = R.drawable.ic_cloud_white_24dp
 
     constructor(parcel: Parcel) : this() {
-        cityName = parcel.readString()
+        cityName = parcel.readString()?: ""
         humidity = parcel.readDouble()
         temp_c = parcel.readDouble()
         latitude = parcel.readDouble()
         longitude = parcel.readDouble()
-        weather = parcel.readString()
+        weather = parcel.readString()?: ""
         windSpeed = parcel.readDouble()
     }
 

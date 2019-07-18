@@ -9,10 +9,9 @@ import android.util.Log
 import android.widget.RemoteViews
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import java.text.SimpleDateFormat
+import java.util.*
 
-/**
- * Implementation of App Widget functionality.
- */
 class SimpleWeatherWidget : AppWidgetProvider() {
 
     val TAG = "WidgetProvider"
@@ -29,7 +28,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 lastLocation = location ?: Location("Oulu")
-
             }
 
         fusedLocationClient.lastLocation
@@ -42,12 +40,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
                     updateAppWidget(context, appWidgetManager, appWidgetId, lastLocation)
                 }
             }
-        /*
-        for (appWidgetId in appWidgetIds) {
-            Log.w(TAG, "onUpdate method called")
-            updateAppWidget(context, appWidgetManager, appWidgetId, Location("Washington"))
-        }*/
-
     }
 
 
@@ -81,9 +73,11 @@ class SimpleWeatherWidget : AppWidgetProvider() {
                 views.setTextViewText(R.id.appwidget_text_humidity, myWeatherDetailObject.humidity.toString() + "%")
                 views.setTextViewText(R.id.appwidget_text_wind_speed, myWeatherDetailObject.windSpeed.toString() + "m/s")
 
+                //set update time visible
+                val sdf = SimpleDateFormat("hh:mm")
+                val currentTime = sdf.format(Date())
+                views.setTextViewText(R.id.appwidget_text_update_time, "updated: $currentTime")
 
-
-                //views.setTextViewText(R.id.appwidget_text_wind_speed, "ASDASDASDASD")
                 //update icon
                 views.setImageViewResource(R.id.imageViewWidget, myWeatherDetailObject.icon)
 
@@ -110,20 +104,11 @@ class SimpleWeatherWidget : AppWidgetProvider() {
             myWidgetId = appWidgetId
             myAppWidgetManager = appWidgetManager
 
-            // Instruct the widget manager to update the widget
-
-
-            val lat = getSharedPref("last_location_lat", context)
-            val lon = getSharedPref("last_location_lon", context)
-
             Log.d("updateWidget", lastLocation.toString())
-            //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
             val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
-            //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + 65.0 + "&lon=" + 25.0 + "&appid=" + appId //Hailuoto
             val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this)
             weatherDetailGetterThread.call()
 
-            //views.setTextViewText(R.id.appwidget_text_wind_speed, "Tervepä terve")
             views = RemoteViews(context.packageName, R.layout.simple_weather_widget)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }

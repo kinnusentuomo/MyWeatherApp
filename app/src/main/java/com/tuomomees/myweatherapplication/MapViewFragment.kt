@@ -194,7 +194,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         return myRootView
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
     }
