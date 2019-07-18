@@ -61,9 +61,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private var notificationManager: NotificationManager? = null
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
-
-
     private lateinit var myEditTextCity: EditText
 
     //Application initialization when first created
@@ -89,9 +86,24 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         initActionBar()
         initFragments()
+        initSettings()
 
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
+
+
+    }
+
+    private fun initSettings(){
+
+        val defaultCity = getSharedPrefString("application_default_location")
+
+
+        //SendQuery with default city when app starts
+        if(defaultCity != "" && defaultCity != null){
+            Log.d(TAG, "Default location set to: " + getSharedPrefString("application_default_location"))
+            sendQueryWithCityString(defaultCity)
+        }
     }
 
     private fun setupPermission(wantedPermission: String, requestCode: Int) {
@@ -147,10 +159,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private fun initActionBar() {
         //supportActionBar?.hide()
 
-
-
-
-
         setSupportActionBar(findViewById(R.id.toolbar))
         toolbar = supportActionBar!!
 
@@ -197,8 +205,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     }
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
-
-
 
         if(myWeatherDetailObject.cityName != ""){
             val fragmentArgs = Bundle()
@@ -314,10 +320,22 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         return sharedPref.getFloat(key, 0.0f)
     }
 
+    fun getSharedPrefString(key: String): String? {
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        return sharedPref.getString(key, "")
+    }
+
     fun sendQueryWithCity(v: View) {
 
         viewPagerProgressBar.visibility = View.VISIBLE
         val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
+        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
+        weatherDetailGetterThread.call()
+    }
+
+    fun sendQueryWithCityString(cityName: String){
+        viewPagerProgressBar.visibility = View.VISIBLE
+        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }

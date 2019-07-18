@@ -45,6 +45,5 @@
     <style name="ViewPagerProgressBarStyle">
         <item name="android:color">@color/colorWhite</item>
         <item name="android:colorEdgeEffect">@color/cardview_dark_background</item>
-
     </style>
 </resources>
