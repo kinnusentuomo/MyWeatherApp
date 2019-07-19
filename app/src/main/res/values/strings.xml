@@ -18,4 +18,5 @@
 
     <!-- Widget Preferences -->
     <string name="widget_default_location">Default location</string>
+    <string name="widget_update_interval">Update interval</string>
 </resources>

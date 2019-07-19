@@ -1,15 +1,14 @@
 package com.tuomomees.myweatherapplication
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
+import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -19,7 +18,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -92,6 +90,34 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
 
 
+
+    }
+
+    override fun onResume(){
+        super.onResume()
+
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
+        if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
+            startService(Intent(this, UpdateWeatherService::class.java))
+        }
+        else{
+            stopService(Intent(this, UpdateWeatherService::class.java))
+        }
+        Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
+    }
+
+    private fun isMyServiceRunning(serviceClass:Class<*>):Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.name == service.service.className)
+            {
+                return true
+            }
+        }
+        return false
     }
 
     private fun initSettings(){
@@ -113,10 +139,10 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         )
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission to " + permission + " denied!")
+            Log.i(TAG, "Permission to $permission denied!")
             requestWantedPermission(wantedPermission, requestCode)
         } else {
-            Log.i(TAG, "Permission to " + permission + " granted!")
+            Log.i(TAG, "Permission to $permission granted!")
             getLastLocation()
             //startService(Intent(this, UpdateWeatherService::class.java))
         }
@@ -129,7 +155,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             requestCode
         )
 
-        Log.d(TAG, "Requesting permission: " + wantedPermission + " with code: " + requestCode)
+        Log.d(TAG, "Requesting permission: $wantedPermission with code: $requestCode")
     }
 
     //this has to be implemented for some reason
@@ -223,16 +249,14 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         viewPagerProgressBar.visibility = View.INVISIBLE
     }
 
+    /*
     fun createNotification(icon: Int, title: String, message: String) {
 
         val channelID = "weather notifications"
         createNotificationChannel(channelID, "tämän tuubin kautta ammutaan notifikaatioita", channelID)
         Log.d(TAG, message)
 
-        val notification = Notification.Builder(
-            applicationContext,
-            channelID
-        )
+        val notification = Notification.Builder(applicationContext, channelID)
             .setContentTitle(title)
             .setContentText(message)
             .setSmallIcon(icon)
@@ -240,8 +264,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             .build()
 
         notificationManager?.notify(0, notification)
-    }
-
+    }*/
+/*
     private fun createNotificationChannel(name: String, description: String, id: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -254,7 +278,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }
+    }*/
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -278,9 +302,10 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     }
 
 
+    @SuppressLint("MissingPermission") //for some reason this moran IDE does not recognize my permission check done earlier....
     private fun getLastLocation() {
 
-        var myLocation: Location = Location("Washington")
+        var myLocation = Location("Washington")
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
 
@@ -307,7 +332,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             }
     }
 
-    fun addSharedPref(key: String, item: Double) {
+    private fun addSharedPref(key: String, item: Double) {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPref.edit()
 
@@ -333,7 +358,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         weatherDetailGetterThread.call()
     }
 
-    fun sendQueryWithCityString(cityName: String){
+    private fun sendQueryWithCityString(cityName: String){
         viewPagerProgressBar.visibility = View.VISIBLE
         val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)

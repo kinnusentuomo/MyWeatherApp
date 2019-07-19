@@ -1,5 +1,6 @@
 package com.tuomomees.myweatherapplication
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -123,6 +124,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
 
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
 
@@ -148,7 +150,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             Log.e(TAG, "Can't find style. Error: ", e)
         }
 
-        var myLocation: Location = Location("")
+        var myLocation = Location("")
         (activity as MainActivity).fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 if (location != null) {
@@ -218,7 +220,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             MapViewFragment().apply {
                 arguments = Bundle().apply {
 

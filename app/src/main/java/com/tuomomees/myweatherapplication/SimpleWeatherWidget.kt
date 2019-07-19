@@ -11,6 +11,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.AlarmManager
+import android.content.Context.ALARM_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+
+
 
 class SimpleWeatherWidget : AppWidgetProvider() {
 

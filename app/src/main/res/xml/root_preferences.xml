@@ -42,6 +42,11 @@
                 app:title="@string/widget_default_location"
                 app:useSimpleSummaryProvider="true"/>
 
+        <EditTextPreference
+                app:key="widget_update_interval"
+                app:title="@string/widget_update_interval"
+                app:useSimpleSummaryProvider="true"/>
+
 
     </PreferenceCategory>
 
