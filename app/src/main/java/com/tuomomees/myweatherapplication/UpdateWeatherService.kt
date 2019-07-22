@@ -14,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -25,10 +26,13 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
-        Log.d("Service", "Weather status: " + myWeatherDetailObject.weather)
-        //if(myWeatherDetailObject.weather == "Rain"){
+        val sdf = SimpleDateFormat("hh:mm")
+        val currentTime = sdf.format(Date())
+
+        Log.d("Service", "Weather status: " + myWeatherDetailObject.weather + " " +currentTime)
+        if(myWeatherDetailObject.weather == "Rain"){
             createNotification(myWeatherDetailObject.icon, "Watch out, it is rainy in " + myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
-        //}
+        }
     }
 
     val appId = "7ac8041476369264714a77f37e2f4141"
@@ -76,7 +80,10 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
         handler!!.postDelayed(runnable, TimeUnit.MINUTES.toMillis(60))*/
 
-        getData()
+        //getData()
+
+
+        getDataTest3()
     }
 
 
@@ -101,6 +108,61 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
         }
         t.schedule(tt, /*10 * 1000*/ TimeUnit.MINUTES.toMillis(1)) //Schedule to run tt (TimerTask) again after 10 seconds
+    }
+
+    private fun getDataTest2(){
+        // Create the Handler object (on the main thread by default)
+        val handler = Handler()
+        // Define the code block to be executed
+        val runnableCode = Runnable {
+            // Do something here on the main thread
+            Log.d("Handlers", "Called on main thread")
+
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location ->
+                    lastLocation = location
+                }
+
+            fusedLocationClient.lastLocation
+                .addOnCompleteListener{
+                    val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                    val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
+                    weatherDetailGetterThread.call()
+                }
+        }
+        // Run the above code block on the main thread after 2 seconds
+        handler.postDelayed(runnableCode, TimeUnit.MINUTES.toMillis(1))
+    }
+
+    private fun getDataTest3(){
+        // Create the Handler object (on the main thread by default)
+        val handler = Handler()
+        // Define the code block to be executed
+        val runnableCode = object : Runnable {
+            override fun run() {
+                // Do something here on the main thread
+                Log.d("Handlers", "Called on main thread")
+                // Repeat this the same runnable code block again another 2 seconds
+                // 'this' is referencing the Runnable object
+
+
+
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location ->
+                        lastLocation = location
+                    }
+
+                fusedLocationClient.lastLocation
+                    .addOnCompleteListener{
+                        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
+                        weatherDetailGetterThread.call()
+                    }
+                handler.postDelayed(this, TimeUnit.MINUTES.toMillis(30))
+            }
+        }
+        // Start the initial runnable task by posting through the handler
+        handler.post(runnableCode)
     }
 
 

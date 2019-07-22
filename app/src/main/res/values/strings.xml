@@ -6,4 +6,17 @@
     <string name="title_activity_maps">Map</string>
     <string name="appwidget_text">tuomomees App Lab</string>
     <string name="add_widget">Add widget</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="widget_header">Widget settings</string>
+    <string name="general_header">General</string>
+
+    <!-- General Preferences -->
+    <string name="application_default_location">Default location</string>
+    <string name="application_rain_notification">Current location rain notification</string>
+
+    <!-- Widget Preferences -->
+    <string name="widget_default_location">Default location</string>
+    <string name="widget_update_interval">Update interval</string>
 </resources>

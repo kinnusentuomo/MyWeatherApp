@@ -1,40 +1,36 @@
 package com.tuomomees.myweatherapplication
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
+import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewPager
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.InputStream
 
 
-class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener, MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport, WeatherDetailListFragment.OnFragmentInteractionListener,
+class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentInteractionListener,
+    MapViewFragment.OnFragmentInteractionListener, WeatherDetailGetterThread.ThreadReport,
+    WeatherDetailListFragment.OnFragmentInteractionListener,
     TextWatcher {
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
@@ -44,101 +40,131 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     }
 
+
     override fun afterTextChanged(s: Editable?) {
 
     }
-
-    fun getJsonFileWithFileName(fileName: String){
-        try {
-            val inputStream: InputStream = assets.open("$fileName.json")
-            val inputString = inputStream.bufferedReader().use{it.readText()}
-            Log.d(TAG,inputString)
-        } catch (e:Exception){
-            Log.d(TAG, e.toString())
-        }
-    }
-
 
     val appId = "7ac8041476369264714a77f37e2f4141"
     private var TAG = "MainActivity"
     lateinit var toolbar: ActionBar
     private val LOCATION_REQUEST_CODE = 1706
-    private lateinit var viewPager: ViewPager
-    lateinit var fragmentList: ArrayList<Fragment>
+    private lateinit var viewPager: androidx.viewpager.widget.ViewPager
+    lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
-    lateinit var lastLatLng: LatLng
-    lateinit var listFragment: WeatherDetailListFragment
-    lateinit var mapFragment: MapViewFragment
+    private lateinit var lastLatLng: LatLng
+    private lateinit var listFragment: WeatherDetailListFragment
+    private lateinit var mapFragment: MapViewFragment
 
     private var notificationManager: NotificationManager? = null
+    lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
-
-
+    private lateinit var myEditTextCity: EditText
 
     //Application initialization when first created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //requestWindowFeature(Window.FEATURE_NO_TITLE)
-        //window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
-        //viewPagerProgressBar.progressDrawable = getDrawable(R.drawable.custom_progress_bar)
+        //set edittext change listener which overrides functions
 
 
 
-        getJsonFileWithFileName("city_list")
-
-        editTextCity.addTextChangedListener(this)
+        myEditTextCity = findViewById(R.id.editTextCity)
+        //editTextCity.addTextChangedListener(this)
 
         //init fusedLocation
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        //init notification manager
         notificationManager =
             getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
 
         initActionBar()
-
-        //getLastLocation() //does not work when using virtual device
         initFragments()
+        initSettings()
 
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
+
+
+
+    }
+
+    override fun onResume(){
+        super.onResume()
+
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
+        if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
+            startService(Intent(this, UpdateWeatherService::class.java))
+        }
+        else{
+            stopService(Intent(this, UpdateWeatherService::class.java))
+        }
+        Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
+    }
+
+    private fun isMyServiceRunning(serviceClass:Class<*>):Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.name == service.service.className)
+            {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun initSettings(){
+
+        val defaultCity = getSharedPrefString("application_default_location")
+
+
+        //SendQuery with default city when app starts
+        if(defaultCity != "" && defaultCity != null){
+            Log.d(TAG, "Default location set to: " + getSharedPrefString("application_default_location"))
+            sendQueryWithCityString(defaultCity)
+        }
     }
 
     private fun setupPermission(wantedPermission: String, requestCode: Int) {
-        val permission = ContextCompat.checkSelfPermission(this,
-            wantedPermission)
+        val permission = ContextCompat.checkSelfPermission(
+            this,
+            wantedPermission
+        )
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission to " + permission + " denied!")
+            Log.i(TAG, "Permission to $permission denied!")
             requestWantedPermission(wantedPermission, requestCode)
-        }
-        else{
-            Log.i(TAG, "Permission to " + permission + " granted!")
+        } else {
+            Log.i(TAG, "Permission to $permission granted!")
             getLastLocation()
             //startService(Intent(this, UpdateWeatherService::class.java))
         }
     }
 
     private fun requestWantedPermission(wantedPermission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(this,
+        ActivityCompat.requestPermissions(
+            this,
             arrayOf(wantedPermission),
-            requestCode)
+            requestCode
+        )
 
-        Log.d(TAG, "Requesting permission: " + wantedPermission + " with code: " + requestCode)
-
+        Log.d(TAG, "Requesting permission: $wantedPermission with code: $requestCode")
     }
 
+    //this has to be implemented for some reason
     override fun onRequestPermissionsResult(requestCode: Any, permissions: Any, grantResults: Any) {
-
         Log.d(TAG, "onRequestPermissionResult")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
 
-        Log.d(TAG, "onRequestPermissionResult")
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
 
@@ -155,18 +181,20 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         }
     }
 
-
     //setup bottom navigation and set notification bar as transparent
-    private fun initActionBar(){
-        supportActionBar?.hide()
+    private fun initActionBar() {
+        //supportActionBar?.hide()
+
+        setSupportActionBar(findViewById(R.id.toolbar))
         toolbar = supportActionBar!!
+
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
     //Add fragments to list and then visible to viewpager via adapter
-    private fun initFragments(){
+    private fun initFragments() {
         viewPager = findViewById(R.id.viewPager)
 
         fragmentList = ArrayList()
@@ -188,59 +216,47 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
 
         weatherDetailObjectList.add(myWeatherDetailObject)
-/*
 
-        val weatherDetailListFragment = WeatherDetailListFragment()
-        val fragmentArgs = Bundle()
-
-        fragmentArgs.putParcelableArray("sentWeatherDetailObjectList", weatherDetailObjectList.toTypedArray())
-
-        weatherDetailListFragment.arguments = fragmentArgs
-
-        viewPager.adapter?.notifyDataSetChanged()
-*/
-        try{
+        try {
             val ft = supportFragmentManager.beginTransaction()
             ft.detach(listFragment)
             ft.attach(listFragment)
             ft.commit()
-        }
-        catch(e: Exception){
+        } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
-
         viewPager.adapter?.notifyDataSetChanged()
 
         Log.d(TAG, "added fragment to list")
     }
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
-        val fragmentArgs = Bundle()
-        fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
-        //createNotification(myWeatherDetailObject.icon, myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
+        if(myWeatherDetailObject.cityName != ""){
+            val fragmentArgs = Bundle()
+            fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
-        //Log.d("Main", myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
+            val weatherDetailFragment = WeatherDetailFragment()
+            weatherDetailFragment.arguments = fragmentArgs
 
-        val weatherDetailFragment = WeatherDetailFragment()
-        weatherDetailFragment.arguments = fragmentArgs
+            fragmentList.add(weatherDetailFragment)
 
-        fragmentList.add(weatherDetailFragment)
+            mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+            viewPager.adapter?.notifyDataSetChanged()
+        }
 
-        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
-        viewPager.adapter?.notifyDataSetChanged()
 
         viewPagerProgressBar.visibility = View.INVISIBLE
     }
 
-    fun createNotification(icon: Int, title: String, message: String){
+    /*
+    fun createNotification(icon: Int, title: String, message: String) {
 
         val channelID = "weather notifications"
         createNotificationChannel(channelID, "tämän tuubin kautta ammutaan notifikaatioita", channelID)
         Log.d(TAG, message)
 
-        val notification = Notification.Builder(applicationContext,
-            channelID)
+        val notification = Notification.Builder(applicationContext, channelID)
             .setContentTitle(title)
             .setContentText(message)
             .setSmallIcon(icon)
@@ -248,8 +264,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             .build()
 
         notificationManager?.notify(0, notification)
-    }
-
+    }*/
+/*
     private fun createNotificationChannel(name: String, description: String, id: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -262,7 +278,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }
+    }*/
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -285,36 +301,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         false
     }
 
-    fun getFragmentWithTag(tag: String): Fragment {
-        for (fragment in fragmentList) {
-            if(fragment.tag == tag){
-                return fragment
-            }
-        }
-        return fragmentList.get(0)
-    }
 
-    //Added
-    lateinit var fusedLocationClient: FusedLocationProviderClient
-    fun getLastLocation(){
+    @SuppressLint("MissingPermission") //for some reason this moran IDE does not recognize my permission check done earlier....
+    private fun getLastLocation() {
 
-        var myLocation: Location = Location("Washington")
+        var myLocation = Location("Washington")
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
-                //Log.d("LastLongitude", location.longitude.toString())
-                //Log.d("LastLatitude", location.latitude.toString())
-
 
                 if (location != null) {
                     myLocation = location
                 }
-
-
             }
 
         fusedLocationClient.lastLocation
-            .addOnCompleteListener{
-                val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
+            .addOnCompleteListener {
+                val queryString =
+                    "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
 
                 weatherDetailGetterThread.call()
@@ -329,25 +332,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             }
     }
 
-    fun hasPermission(permission: String): Boolean {
-
-        val wantedPermission = ContextCompat.checkSelfPermission(this, permission)
-        var permissionGranted = false
-        if (wantedPermission == PackageManager.PERMISSION_GRANTED) {
-            permissionGranted = true
-        }
-
-        return permissionGranted
-    }
-
-    fun requestPermission(permission: String){
-
-         ActivityCompat.requestPermissions(this,
-                        arrayOf(permission),
-             LOCATION_REQUEST_CODE)
-    }
-
-    fun addSharedPref(key: String, item: Double){
+    private fun addSharedPref(key: String, item: Double) {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPref.edit()
 
@@ -360,27 +345,37 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         return sharedPref.getFloat(key, 0.0f)
     }
 
-    fun sendQueryWithCity(v: View){
+    fun getSharedPrefString(key: String): String? {
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        return sharedPref.getString(key, "")
+    }
+
+    fun sendQueryWithCity(v: View) {
 
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + editTextCity.text + "&appid=" + appId
+        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
-    fun sendQueryWithLocation(location: Location){
-        //val fragment = fragmentList.get(0) as WeatherDetailFragment
-        //fragment.getWeatherDataJson("gps", location)
-
-
+    private fun sendQueryWithCityString(cityName: String){
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
+        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
+        weatherDetailGetterThread.call()
+    }
+
+    fun sendQueryWithLocation(location: Location) {
+        viewPagerProgressBar.visibility = View.VISIBLE
+        val queryString =
+            "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
 
-    fun addMarker(myWeatherDetailObject: MyWeatherDetailObject){
-        mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+    fun goToSettings(v: View) {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
 }

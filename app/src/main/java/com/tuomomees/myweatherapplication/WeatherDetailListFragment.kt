@@ -3,7 +3,7 @@ package com.tuomomees.myweatherapplication
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,16 +19,7 @@ import java.util.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [WeatherDetailListFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [WeatherDetailListFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
-class WeatherDetailListFragment : Fragment() {
+class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
@@ -113,32 +104,11 @@ class WeatherDetailListFragment : Fragment() {
         listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment WeatherDetailListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             WeatherDetailListFragment().apply {
@@ -149,29 +119,27 @@ class WeatherDetailListFragment : Fragment() {
             }
     }
 
+
+    //Adapter for a single listview item, returns one listitem which has text and image
     class MyAdapter(
         context: Context,
         private val myWeatherDetailObjectList: List<MyWeatherDetailObject>) : BaseAdapter() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
 
-            rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList.get(position).cityName + " " + "%.0f".format(myWeatherDetailObjectList.get(position).temp_c) + "°C"
+            val formattedTemp = "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
+            val cityName = myWeatherDetailObjectList[position].cityName
+            val formattedString = "$cityName $formattedTemp"
 
-            var drawable: Int = R.drawable.ic_cloud_white_24dp
-
-            when(myWeatherDetailObjectList.get(position).weather){
-                "Clouds" -> drawable = R.drawable.ic_cloud_white_24dp
-                "Clear" -> drawable = R.drawable.ic_wb_sunny_white_24dp
-                "Rain" -> drawable = R.drawable.ic_rain_white_24dp
-            }
-
-            rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(drawable)
+            //rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
+            rowView.findViewById<TextView>(R.id.textViewListText).text = formattedString
+            rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(myWeatherDetailObjectList[position].icon)
 
             return rowView
         }
 
         override fun getItem(position: Int): Any {
-            return myWeatherDetailObjectList.get(position)
+            return myWeatherDetailObjectList[position]
         }
 
         override fun getItemId(position: Int): Long {

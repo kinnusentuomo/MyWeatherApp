@@ -1,11 +1,15 @@
 package com.tuomomees.myweatherapplication
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,34 +18,15 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.support.v4.content.ContextCompat
-import android.graphics.drawable.Drawable
-import android.nfc.Tag
-import android.widget.ProgressBar
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [MapViewFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [MapViewFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
-class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
+class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
 
-    val appId = "7ac8041476369264714a77f37e2f4141"
-    val TAG = "MapViewFragment"
+    private val appId = "7ac8041476369264714a77f37e2f4141"
+    private val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
 
@@ -50,22 +35,13 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     }
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
-        //addMarkerWithDetails(myWeatherDetailObject)
-
 
         (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
-
-
-
-
 
         markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon))
 
-
-
         (activity as MainActivity).addDataToList(myWeatherDetailObject)
-
 
         val fragmentArgs = Bundle()
         fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
@@ -105,7 +81,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         queryWithLocation(location, addedMarkerId)
     }
 
-    fun queryWithLocation(location: Location, markerId: Int){
+    private fun queryWithLocation(location: Location, markerId: Int){
         (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
         val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this, markerId)
@@ -117,24 +93,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
-
-
-        /*
-        var icon: Int = R.drawable.ic_cloud_white_24dp
-
-        when(myWeatherDetailObject.weather){
-            "Clouds" -> icon = R.drawable.ic_cloud_white_24dp
-            "Clear" -> icon = R.drawable.ic_wb_sunny_white_24dp
-            "Rain" -> icon = R.drawable.ic_rain_white_24dp
-        }*/
-
-/*
-        mMap.addMarker(MarkerOptions()
-            .position(latLng)
-            .title(titleString)
-            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-            .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))*/
-
 
             try{
                 mMap.setOnMapLoadedCallback {
@@ -166,13 +124,9 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
 
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
-
-
-        //val locationHandler = LocationHandler()
-        //locationHandler.getLastLocation(this.requireContext(), Location("") -> moveCamera())
-
 
         mMap = p0
 
@@ -196,19 +150,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
             Log.e(TAG, "Can't find style. Error: ", e)
         }
 
-/*
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        val oulu = LatLng(65.01, 25.50)
-
-
-        val currentLocation = LatLng((activity as MainActivity).getSharedPref("locationLatitude").toDouble(),
-            (activity as MainActivity).getSharedPref("locationLongitude").toDouble()
-        )
-        */
-
-
-        var myLocation: Location = Location("")
+        var myLocation = Location("")
         (activity as MainActivity).fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 if (location != null) {
@@ -223,32 +165,21 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
                 .title("Current location")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
         }
-
-
-
-        //mMap.addMarker(MarkerOptions().position(oulu).title("Oulu"))
-        //mMap.addMarker(MarkerOptions().position(currentLocation).title("Current location"))
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(oulu))
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))
     }
 
 
-    fun moveCamera(latLng: LatLng = LatLng(0.0, 0.0)) {
+    private fun moveCamera(latLng: LatLng = LatLng(0.0, 0.0)) {
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -258,10 +189,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
     ): View? {
 
         val myRootView = inflater.inflate(R.layout.fragment_map_view, container, false)
-
-        //mapView.getMapAsync(this)
-        // Inflate the layout for this fragment
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -269,7 +196,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         return myRootView
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
     }
@@ -288,38 +214,16 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapViewFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             MapViewFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
                 }
             }
     }

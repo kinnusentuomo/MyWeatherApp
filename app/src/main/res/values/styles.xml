@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. Theme.AppCompat.Light.DarkActionBar-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -45,6 +45,5 @@
     <style name="ViewPagerProgressBarStyle">
         <item name="android:color">@color/colorWhite</item>
         <item name="android:colorEdgeEffect">@color/cardview_dark_background</item>
-
     </style>
 </resources>
