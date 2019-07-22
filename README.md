@@ -1,5 +1,5 @@
 # MyWeatherApp
-Android application to fetch current weather data
+Description: Android application to fetch current weather data
 
 Ominaisuudet
 * Säie, joka hakee datan Rest API:n kautta JSON muodossa
