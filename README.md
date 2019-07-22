@@ -9,6 +9,10 @@ Ominaisuudet
 * Widget, jonka päivitystiheys on asetettu kiinteäksi 30min välein
 * Sovelluksen saadessa paikkatieto-oikeuden, se hakee automaattisesti säätiedot nykyisestä olinpaikasta (viimeksi saatu olinpaikka)
 * Service, joka tarkistaa sään tilan nykyisestä olinpaikasta joka 60. minuutti. Mikäli olinpaikassa on sateista, service lähettää notifikaation sään tilasta.
+* Asetukset (Settings View)
+  - Oletussijainti voidaan asettaa etukäteen, jonka data haetaan jo sovelluksen käynnistyessä
+  - Oletussijainti widgettiin voidaan asettaa, jolloin widget ei hae dataa nykyisestä olinpaikasta, vaan ennalta määritellystä sijainnista
+  - Taustapalvelu, joka varoittaa nykyisen sijainnin sateisuudesta voidaan asettaa päälle/pois päältä
 
 
 ![alt text](https://github.com/tuomomees/MyWeatherApp/blob/master/app/src/main/res/screenshots/weather_details.jpeg "Weather Details")
