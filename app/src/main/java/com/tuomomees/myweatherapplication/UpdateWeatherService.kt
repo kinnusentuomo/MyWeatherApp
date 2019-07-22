@@ -51,6 +51,7 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
 
 
+        lastLocation = Location("")
 
         val lat = SimpleWeatherWidget.getSharedPref("last_location_lat", this)
         val lon = SimpleWeatherWidget.getSharedPref("last_location_lon", this)
@@ -148,8 +149,10 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
 
                 fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location: Location ->
-                        lastLocation = location
+                    .addOnSuccessListener { location: Location? ->
+                        if (location != null) {
+                            lastLocation = location
+                        }
                     }
 
                 fusedLocationClient.lastLocation

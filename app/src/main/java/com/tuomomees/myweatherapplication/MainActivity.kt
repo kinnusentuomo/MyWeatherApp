@@ -7,6 +7,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -66,9 +70,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //set edittext change listener which overrides functions
-
-
 
         myEditTextCity = findViewById(R.id.editTextCity)
         //editTextCity.addTextChangedListener(this)
@@ -102,8 +103,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
             startService(Intent(this, UpdateWeatherService::class.java))
         }
-        else{
+
+        if(!backgroundServiceEnabled && isMyServiceRunning(UpdateWeatherService::class.java)){
             stopService(Intent(this, UpdateWeatherService::class.java))
+        }
+        else{
+
         }
         Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
     }
@@ -183,14 +188,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     //setup bottom navigation and set notification bar as transparent
     private fun initActionBar() {
-        //supportActionBar?.hide()
+
+        window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
+
+
+        supportActionBar?.hide()
+
+        window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
+
 
         setSupportActionBar(findViewById(R.id.toolbar))
-        toolbar = supportActionBar!!
+
+        //toolbar = supportActionBar!!
 
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
     }
 
     //Add fragments to list and then visible to viewpager via adapter
