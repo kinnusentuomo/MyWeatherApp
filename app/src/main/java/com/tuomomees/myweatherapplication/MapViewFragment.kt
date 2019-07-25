@@ -83,7 +83,8 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
     private fun queryWithLocation(location: Location, markerId: Int){
         (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this, markerId)
         weatherDetailGetterThread.call()
     }

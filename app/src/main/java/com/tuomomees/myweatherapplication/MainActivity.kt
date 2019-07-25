@@ -330,8 +330,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fusedLocationClient.lastLocation
             .addOnCompleteListener {
-                val queryString =
-                    "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
+                //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
+                val queryString = Helper().getQueryStringLocation(myLocation.latitude, myLocation.longitude)
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
 
                 weatherDetailGetterThread.call()
@@ -367,22 +367,27 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     fun sendQueryWithCity(v: View) {
 
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
+        val queryString = Helper().getQueryStringCity(myEditTextCity.text.toString())
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
     private fun sendQueryWithCityString(cityName: String){
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
+
+
+        val queryString = Helper().getQueryStringCity(cityName)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
     fun sendQueryWithLocation(location: Location) {
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString =
-            "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+
+        val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }

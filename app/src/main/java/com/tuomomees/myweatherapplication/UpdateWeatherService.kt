@@ -101,7 +101,8 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
                 fusedLocationClient.lastLocation
                     .addOnCompleteListener{
-                        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
                         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
                         weatherDetailGetterThread.call()
                     }
@@ -157,7 +158,8 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
                 fusedLocationClient.lastLocation
                     .addOnCompleteListener{
-                        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                        val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
                         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
                         weatherDetailGetterThread.call()
                     }

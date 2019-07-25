@@ -33,7 +33,8 @@ class SimpleWeatherWidget : AppWidgetProvider() {
         {
             lastLocation = Location(widgetDefaultLocation)
 
-            val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + widgetDefaultLocation + "&appid=" + appId
+            //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + widgetDefaultLocation + "&appid=" + appId
+            val queryString = Helper().getQueryStringCity(widgetDefaultLocation)
 
             for (appWidgetId in appWidgetIds) {
                 updateAppWidget(context, appWidgetManager, appWidgetId, queryString)
@@ -50,7 +51,8 @@ class SimpleWeatherWidget : AppWidgetProvider() {
 
             fusedLocationClient.lastLocation
                 .addOnCompleteListener{
-                    val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                    //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
+                    val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
                     // There may be multiple widgets active, so update all of them
                     for (appWidgetId in appWidgetIds) {
                         updateAppWidget(context, appWidgetManager, appWidgetId, queryString)
