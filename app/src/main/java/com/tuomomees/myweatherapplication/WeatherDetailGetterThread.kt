@@ -137,9 +137,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
             //https://api.apixu.com/v1/current.json?key=f24e5163a3664d16b8692210192507&q=Paris
         //val myConnection = URL(queryString).openConnection() as HttpsURLConnection
 
-
-
-
         Log.d(TAG, queryString)
         val myWeatherDetailObject = MyWeatherDetailObject()
 
@@ -154,7 +151,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 val locationBlock = jsonObject.getJSONObject("location")
                 val currentBlock = jsonObject.getJSONObject("current")
                 val conditionBlock = currentBlock.getJSONObject("condition")
-
 
                 val cityName = locationBlock.getString("name")
                 val cityCountry = locationBlock.getString("country")
@@ -173,7 +169,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 myWeatherDetailObject.humidity = humidity.toDouble()
                 myWeatherDetailObject.temp_c = temp_c
                 myWeatherDetailObject.weather = weather
-                myWeatherDetailObject.windSpeed = wind_kph.toDouble()
+                myWeatherDetailObject.windSpeed = (wind_kph / 3.6)
                 myWeatherDetailObject.latitude = lat
                 myWeatherDetailObject.longitude = lon
                 myWeatherDetailObject.cityName = cityName.toString()
@@ -187,9 +183,11 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 var icon: Int = R.drawable.ic_cloud_white_24dp
 
                 when(weather){
-                    "Clouds" -> icon = R.drawable.ic_cloud_white_24dp
+                    "Cloudy", "Overcast" -> icon = R.drawable.ic_cloud_white_24dp
+                    "Partly cloudy" -> icon = R.drawable.ic_cloud_white_24dp
                     "Sunny" -> icon = R.drawable.ic_wb_sunny_white_24dp
-                    "Rain" -> icon = R.drawable.ic_rain_white_24dp
+                    "Rain", "Light drizzle",
+                    "Light rain shower"  -> icon = R.drawable.ic_rain_white_24dp
                 }
 
                 myWeatherDetailObject.icon = icon

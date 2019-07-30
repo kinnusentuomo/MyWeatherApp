@@ -102,7 +102,7 @@ class WeatherDetailFragment : androidx.fragment.app.Fragment() {
         view.findViewById<TextView>(R.id.textViewCity).text = myWeatherDetailObject.cityName
         view.findViewById<TextView>(R.id.textViewTemperature).text = "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         view.findViewById<TextView>(R.id.textViewHumidity).text = myWeatherDetailObject.humidity.toString() + "%"
-        view.findViewById<TextView>(R.id.textViewWindSpeed).text = myWeatherDetailObject.windSpeed.toString() + "m/s"
+        view.findViewById<TextView>(R.id.textViewWindSpeed).text = /*myWeatherDetailObject.windSpeed.toString() + "m/s"*/ "%.1f".format(myWeatherDetailObject.windSpeed) + "m/s"
         view.findViewById<ImageView>(R.id.imageViewWeatherIcon).setImageResource(myWeatherDetailObject.icon)
 
         /*

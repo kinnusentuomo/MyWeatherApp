@@ -9,4 +9,8 @@ class Helper(){
     fun getQueryStringLocation(lat: Double, lon: Double): String {
         return "https://api.apixu.com/v1/current.json?key=f24e5163a3664d16b8692210192507&q=$lat,$lon"
     }
+
+    fun getQueryStringCityWeekly(cityName: String): String {
+        return "http://api.apixu.com/v1/forecast.json?key=f24e5163a3664d16b8692210192507&q=$cityName&days=7"
+    }
 }

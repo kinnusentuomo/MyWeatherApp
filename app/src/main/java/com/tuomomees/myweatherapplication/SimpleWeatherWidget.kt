@@ -11,10 +11,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.util.*
-import android.app.AlarmManager
-import android.content.Context.ALARM_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
-
 
 
 class SimpleWeatherWidget : AppWidgetProvider() {
@@ -33,7 +29,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
         {
             lastLocation = Location(widgetDefaultLocation)
 
-            //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + widgetDefaultLocation + "&appid=" + appId
             val queryString = Helper().getQueryStringCity(widgetDefaultLocation)
 
             for (appWidgetId in appWidgetIds) {
@@ -51,7 +46,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
 
             fusedLocationClient.lastLocation
                 .addOnCompleteListener{
-                    //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
                     val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
                     // There may be multiple widgets active, so update all of them
                     for (appWidgetId in appWidgetIds) {
@@ -90,7 +84,7 @@ class SimpleWeatherWidget : AppWidgetProvider() {
                 views.setTextViewText(R.id.appwidget_text_cityname, myWeatherDetailObject.cityName)
                 views.setTextViewText(R.id.appwidget_text_temp_c, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
                 views.setTextViewText(R.id.appwidget_text_humidity, myWeatherDetailObject.humidity.toString() + "%")
-                views.setTextViewText(R.id.appwidget_text_wind_speed, myWeatherDetailObject.windSpeed.toString() + "m/s")
+                views.setTextViewText(R.id.appwidget_text_wind_speed, "%.1f".format(myWeatherDetailObject.windSpeed) + "m/s")
 
                 //set update time visible
                 val sdf = SimpleDateFormat("hh:mm")

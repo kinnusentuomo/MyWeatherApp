@@ -3,7 +3,6 @@ package com.tuomomees.myweatherapplication
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -127,9 +126,10 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
 
+
             val formattedTemp = "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
             val cityName = myWeatherDetailObjectList[position].cityName
-            val formattedString = "$cityName $formattedTemp"
+            val formattedString = "$cityName \t\t $formattedTemp"
 
             //rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
             rowView.findViewById<TextView>(R.id.textViewListText).text = formattedString
