@@ -13,6 +13,9 @@ import android.widget.ListView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import androidx.core.content.ContextCompat.getSystemService
+
+
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -126,10 +129,9 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
 
-
             val formattedTemp = "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
             val cityName = myWeatherDetailObjectList[position].cityName
-            val formattedString = "$cityName \t\t $formattedTemp"
+            val formattedString = "$cityName $formattedTemp"
 
             //rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
             rowView.findViewById<TextView>(R.id.textViewListText).text = formattedString

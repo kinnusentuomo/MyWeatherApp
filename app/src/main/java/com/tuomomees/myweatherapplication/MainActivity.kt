@@ -85,9 +85,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
-
-
-
     }
 
     override fun onResume(){
