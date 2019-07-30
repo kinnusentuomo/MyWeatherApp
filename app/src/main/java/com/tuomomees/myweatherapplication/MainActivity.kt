@@ -66,9 +66,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //set edittext change listener which overrides functions
-
-
 
         myEditTextCity = findViewById(R.id.editTextCity)
         //editTextCity.addTextChangedListener(this)
@@ -102,8 +99,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
             startService(Intent(this, UpdateWeatherService::class.java))
         }
-        else{
+
+        if(!backgroundServiceEnabled && isMyServiceRunning(UpdateWeatherService::class.java)){
             stopService(Intent(this, UpdateWeatherService::class.java))
+        }
+        else{
+
         }
         Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
     }
@@ -183,14 +184,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     //setup bottom navigation and set notification bar as transparent
     private fun initActionBar() {
-        //supportActionBar?.hide()
+
+        window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
+
+
+        supportActionBar?.hide()
+
+        window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
+
 
         setSupportActionBar(findViewById(R.id.toolbar))
-        toolbar = supportActionBar!!
+
+        //toolbar = supportActionBar!!
 
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
     }
 
     //Add fragments to list and then visible to viewpager via adapter
@@ -316,8 +326,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fusedLocationClient.lastLocation
             .addOnCompleteListener {
-                val queryString =
-                    "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
+                //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + myLocation.latitude + "&lon=" + myLocation.longitude + "&appid=" + appId
+                val queryString = Helper().getQueryStringLocation(myLocation.latitude, myLocation.longitude)
                 val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
 
                 weatherDetailGetterThread.call()
@@ -353,22 +363,27 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     fun sendQueryWithCity(v: View) {
 
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + myEditTextCity.text + "&appid=" + appId
+        val queryString = Helper().getQueryStringCity(myEditTextCity.text.toString())
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
     private fun sendQueryWithCityString(cityName: String){
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + appId
+
+
+        val queryString = Helper().getQueryStringCity(cityName)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
 
     fun sendQueryWithLocation(location: Location) {
         viewPagerProgressBar.visibility = View.VISIBLE
-        val queryString =
-            "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
+
+        val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
         weatherDetailGetterThread.call()
     }
