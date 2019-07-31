@@ -68,9 +68,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
         private lateinit var views: RemoteViews
         private lateinit var myAppWidgetManager: AppWidgetManager
         private var myWidgetId: Int = 0
-        override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-
-        }
 
         override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
             Log.d("ThreadReadyWidget", "Data: " + myWeatherDetailObject.cityName)

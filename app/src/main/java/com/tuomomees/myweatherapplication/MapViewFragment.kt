@@ -27,28 +27,34 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
 
-    override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-
-    }
-
-
     //Callback when thread ready
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
+        //Set Progressbar invisible -> Job done no more waiting
         (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
 
+        //AddMarker with data / Update marker with data by id
         markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon))
 
-        (activity as MainActivity).addDataToList(myWeatherDetailObject)
+        //Add data to list (ListView)
+        //(activity as MainActivity).addDataToList(myWeatherDetailObject)
+        (activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
 
+        //Notify listview that data has changed
+        (activity as MainActivity).listFragment.adapter.notifyDataSetChanged()
+
+        //Create WeatherDetailFragment which holds just queried data
         val fragmentArgs = Bundle()
         fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
         val weatherDetailFragment = WeatherDetailFragment()
         weatherDetailFragment.arguments = fragmentArgs
 
+        //Add new fragment to list so that adapter holds it and sets visible to ViewPager
         (activity as MainActivity).fragmentList.add(weatherDetailFragment)
+
+        //Update Adapter -> notify adapter to update (ViewPager)
         (activity as MainActivity).viewPager.adapter?.notifyDataSetChanged()
     }
 
@@ -70,7 +76,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         location.latitude = p0.latitude
 
         (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
-        Helper().queryWithLocation(location, addedMarkerId, this.requireContext(), this as WeatherDetailGetterThread.ThreadReport)
+        Helper().sendQueryWithLocation(location, addedMarkerId, this.requireContext(), this as WeatherDetailGetterThread.ThreadReport)
     }
 
     fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){

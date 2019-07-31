@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.ActivityManager
 import android.app.AlertDialog
 import android.app.NotificationManager
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -16,13 +19,11 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     //private lateinit var lastLatLng: LatLng
-    private lateinit var listFragment: WeatherDetailListFragment
+    lateinit var listFragment: WeatherDetailListFragment
     private lateinit var mapFragment: MapViewFragment
 
     private var notificationManager: NotificationManager? = null
@@ -247,43 +248,36 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         Log.d(TAG, uri.toString())
     }
 
-    override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-
-        weatherDetailObjectList.add(myWeatherDetailObject)
-
-        try {
-            val ft = supportFragmentManager.beginTransaction()
-            ft.detach(listFragment)
-            ft.attach(listFragment)
-            ft.commit()
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-        }
-        viewPager.adapter?.notifyDataSetChanged()
-
-        Log.d(TAG, "added fragment to list")
-    }
-
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
+        //Set Progressbar invisible -> Job done no more waiting
+        viewPagerProgressBar.visibility = View.INVISIBLE
+
+        //prevent nameless data
         if(myWeatherDetailObject.cityName != ""){
+            //Add marker to MapView
+            mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+
+            //Add data item to list
+            weatherDetailObjectList.add(myWeatherDetailObject)
+
+            //Notify listview that data has changed
+            listFragment.adapter.notifyDataSetChanged()
+
+            //Create detail fragment
             val fragmentArgs = Bundle()
             fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
             val weatherDetailFragment = WeatherDetailFragment()
             weatherDetailFragment.arguments = fragmentArgs
 
+            //Add detail fragment to list
             fragmentList.add(weatherDetailFragment)
 
-            mapFragment.addMarkerWithDetails(myWeatherDetailObject)
+            //Update adapter
             viewPager.adapter?.notifyDataSetChanged()
         }
-
-
-        viewPagerProgressBar.visibility = View.INVISIBLE
     }
-
-
 
     private fun getLastLocation() {
 
@@ -298,24 +292,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         fusedLocationClient.lastLocation
             .addOnCompleteListener {
-                val queryString = Helper().getQueryStringLocation(myLocation.latitude, myLocation.longitude)
-                val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
-                weatherDetailGetterThread.call()
-                //lastLatLng = LatLng(myLocation.latitude, myLocation.longitude)
-
-
-                /*
-                val intent = Intent(this, SimpleWeatherWidget::class.java)
-                intent.putExtra("last_location", myLocation)
-                sendBroadcast(intent)
-
-                addSharedPref("last_location_lat", myLocation.latitude)
-                addSharedPref("last_location_lon", myLocation.longitude)*/
+                Helper().sendQueryWithLocation(myLocation, 0, this, this)
             }
     }
 
 
-    fun initWidget(){
+    private fun initWidget(){
         val intent = Intent(this, SimpleWeatherWidget::class.java)
         sendBroadcast(intent)
     }

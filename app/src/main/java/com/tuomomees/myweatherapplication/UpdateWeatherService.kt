@@ -20,9 +20,6 @@ import java.util.concurrent.TimeUnit
 
 
 class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
-    override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-
-    }
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
@@ -41,7 +38,6 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
     lateinit var lastLocation: Location
     val TAG = "Service"
 
-
     var startTime: Long = 0
 
     override fun onCreate() {/*
@@ -59,7 +55,7 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
     private fun getData(){
 
         val handler = Handler()
-        val runnableCode = object : Runnable {
+        val weatherDataUpdaterLoop = object : Runnable {
             override fun run() {
 
                 fusedLocationClient.lastLocation
@@ -71,15 +67,13 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
                 fusedLocationClient.lastLocation
                     .addOnCompleteListener{
-                        val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
-                        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
-                        weatherDetailGetterThread.call()
+                        Helper().sendQueryWithLocation(lastLocation, 0, context, this@UpdateWeatherService)
                     }
                 handler.postDelayed(this, TimeUnit.MINUTES.toMillis(30)) //interval can be defined here
             }
         }
 
-        handler.post(runnableCode)
+        handler.post(weatherDataUpdaterLoop)
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -101,11 +95,11 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
         val aliveTime = System.currentTimeMillis() - startTime
         Log.d(TAG, "Service aliveTime: " + aliveTime)
-        Toast.makeText(this, "Service aliveTime: " + aliveTime, Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, "Service aliveTime: " + aliveTime, Toast.LENGTH_LONG).show()
     }
 
     override fun onStart(intent: Intent, startid: Int) {
-        Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show()
     }
 
     private fun createNotification(icon: Int, title: String, message: String){

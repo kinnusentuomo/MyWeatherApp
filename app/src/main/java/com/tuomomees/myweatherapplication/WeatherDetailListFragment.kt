@@ -25,7 +25,7 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     private var listItems: ArrayList<String>? = null
-    private lateinit var adapter: MyAdapter
+    lateinit var adapter: MyAdapter
     val TAG = "WeatherListFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {

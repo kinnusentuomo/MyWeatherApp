@@ -17,7 +17,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
-        fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
 
     val TAG = "WeatherDetailThread"
@@ -111,7 +110,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     gettingData = true
 
                     threadObserver.ThreadReady(myWeatherDetailObject, markerId)
-                    threadObserver.addDataToList(myWeatherDetailObject)
 
                 }, Response.ErrorListener {
                     Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
@@ -195,7 +193,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 gettingData = true
 
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
-                threadObserver.addDataToList(myWeatherDetailObject)
 
             }, Response.ErrorListener {
                 Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
