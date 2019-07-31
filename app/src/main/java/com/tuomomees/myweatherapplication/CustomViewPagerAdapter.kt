@@ -1,9 +1,5 @@
 package com.tuomomees.myweatherapplication
 
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
-
 
 class CustomViewPagerAdapter internal constructor(fm: androidx.fragment.app.FragmentManager, private val fragmentList: List<androidx.fragment.app.Fragment>) :
     androidx.fragment.app.FragmentPagerAdapter(fm) {

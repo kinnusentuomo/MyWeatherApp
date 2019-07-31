@@ -12,25 +12,20 @@ import org.json.JSONObject
 import java.util.concurrent.Callable
 
 
-class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, var markerId: Int = 0): Thread(),
+class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, private var markerId: Int = 0): Thread(),
     Callable<MyWeatherDetailObject> {
 
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
-        fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject)
     }
 
     val TAG = "WeatherDetailThread"
 
     private var running = true
     private var gettingData = false
-    lateinit var myWeatherDetailObject: MyWeatherDetailObject
+    private lateinit var myWeatherDetailObject: MyWeatherDetailObject
 
     override fun call(): MyWeatherDetailObject {
-
-
-
-
         Log.d(TAG, "Caller: " + context)
 
         myWeatherDetailObject = MyWeatherDetailObject()
@@ -42,17 +37,13 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
             //Thread done -> stop loop -> return data
             running = false
-            Log.d(TAG, "running: " + running)
-
         }
-        Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
-
 
         return myWeatherDetailObject
     }
 
 
-    fun stopThread(stop: Boolean){
+    private fun stopThread(stop: Boolean){
         running = stop
     }
 
@@ -119,7 +110,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                     gettingData = true
 
                     threadObserver.ThreadReady(myWeatherDetailObject, markerId)
-                    threadObserver.addDataToList(myWeatherDetailObject)
 
                 }, Response.ErrorListener {
                     Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
@@ -130,7 +120,13 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     }
 
-    fun getDataFromApixu(){
+    /*
+    -Get data from REST API
+    -Store data to myWeatherDetailObject
+    -Call callback which returns data (ThreadReady())
+    -Stop thread
+     */
+    private fun getDataFromApixu(){
             //Lat Lon
             //https://api.apixu.com/v1/current.json?key=f24e5163a3664d16b8692210192507&q=48.8567,2.3508
             //City
@@ -166,6 +162,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 val lon = locationBlock.getDouble("lon")
 
 
+                //Store all data in object form
                 myWeatherDetailObject.humidity = humidity.toDouble()
                 myWeatherDetailObject.temp_c = temp_c
                 myWeatherDetailObject.weather = weather
@@ -173,7 +170,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 myWeatherDetailObject.latitude = lat
                 myWeatherDetailObject.longitude = lon
                 myWeatherDetailObject.cityName = cityName.toString()
-
 
                 if(myWeatherDetailObject.cityName == ""){
                     myWeatherDetailObject.cityName = "lat " + lat.toString() + "° lon " + lon.toString() + "°"
@@ -197,7 +193,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 gettingData = true
 
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
-                threadObserver.addDataToList(myWeatherDetailObject)
 
             }, Response.ErrorListener {
                 Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()

@@ -1,6 +1,5 @@
 package com.tuomomees.myweatherapplication
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -8,12 +7,11 @@ import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,68 +23,60 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
 
-    private val appId = "7ac8041476369264714a77f37e2f4141"
     private val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
 
-    override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-        //(activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
-    }
-
+    //Callback when thread ready
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
+        //Set Progressbar invisible -> Job done no more waiting
         (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
 
+        //AddMarker with data / Update marker with data by id
         markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon))
 
-        (activity as MainActivity).addDataToList(myWeatherDetailObject)
+        //Add data to list (ListView)
+        //(activity as MainActivity).addDataToList(myWeatherDetailObject)
+        (activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
 
+        //Notify listview that data has changed
+        (activity as MainActivity).listFragment.adapter.notifyDataSetChanged()
+
+        //Create WeatherDetailFragment which holds just queried data
         val fragmentArgs = Bundle()
         fragmentArgs.putParcelable("sentWeatherObject", myWeatherDetailObject)
 
         val weatherDetailFragment = WeatherDetailFragment()
         weatherDetailFragment.arguments = fragmentArgs
 
+        //Add new fragment to list so that adapter holds it and sets visible to ViewPager
         (activity as MainActivity).fragmentList.add(weatherDetailFragment)
 
+        //Update Adapter -> notify adapter to update (ViewPager)
         (activity as MainActivity).viewPager.adapter?.notifyDataSetChanged()
     }
 
     override fun onMapLongClick(p0: LatLng) {
-
 
         val marker = mMap.addMarker(MarkerOptions()
             .position(p0)
             .title("Fetching weather information...")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
 
-
         markerList.add(marker)
 
         val addedMarkerId = markerList.indexOf(marker)
 
-        Log.d(TAG, "marker id : " + addedMarkerId)
-
         moveCamera(p0)
-
-
-        Log.d(TAG, p0.toString())
 
         val location = Location("")
         location.longitude = p0.longitude
         location.latitude = p0.latitude
-        //(activity as MainActivity).sendQueryWithLocation(location)
-        queryWithLocation(location, addedMarkerId)
-    }
 
-    private fun queryWithLocation(location: Location, markerId: Int){
         (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
-        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
-        val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
-        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this, markerId)
-        weatherDetailGetterThread.call()
+        Helper().sendQueryWithLocation(location, addedMarkerId, this.requireContext(), this as WeatherDetailGetterThread.ThreadReport)
     }
 
     fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){
@@ -108,9 +98,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             catch (e: Exception){
                 Log.e(TAG, e.toString())
             }
-
-
-
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -123,9 +110,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-
-
-    @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
 
