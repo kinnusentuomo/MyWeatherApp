@@ -1,6 +1,5 @@
 package com.tuomomees.myweatherapplication
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -32,6 +31,8 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
     }
 
+
+    //Callback when thread ready
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
 
         (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
@@ -58,29 +59,18 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             .title("Fetching weather information...")
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
 
-
         markerList.add(marker)
 
         val addedMarkerId = markerList.indexOf(marker)
 
-        Log.d(TAG, "marker id : " + addedMarkerId)
-
         moveCamera(p0)
-
-        Log.d(TAG, p0.toString())
 
         val location = Location("")
         location.longitude = p0.longitude
         location.latitude = p0.latitude
-        queryWithLocation(location, addedMarkerId)
-    }
 
-    private fun queryWithLocation(location: Location, markerId: Int){
         (activity as MainActivity).viewPagerProgressBar.visibility = View.VISIBLE
-        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.latitude + "&lon=" + location.longitude + "&appid=" + appId
-        val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
-        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this.requireContext(), this, markerId)
-        weatherDetailGetterThread.call()
+        Helper().queryWithLocation(location, addedMarkerId, this.requireContext(), this as WeatherDetailGetterThread.ThreadReport)
     }
 
     fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){
@@ -102,9 +92,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             catch (e: Exception){
                 Log.e(TAG, e.toString())
             }
-
-
-
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -116,8 +103,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
-
-
 
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")

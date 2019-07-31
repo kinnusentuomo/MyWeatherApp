@@ -28,7 +28,7 @@
                 android:background="@drawable/ic_search_white_24dp"
                 android:layout_gravity="center"
                 style="@android:style/Widget.Holo.Button"
-                android:onClick="sendQueryWithCity"
+                android:onClick="onSearchButtonClicked"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:layout_constraintStart_toEndOf="@+id/editTextCity"

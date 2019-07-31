@@ -30,9 +30,9 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
         val currentTime = sdf.format(Date())
 
         Log.d("Service", "Weather status: " + myWeatherDetailObject.weather + " " +currentTime)
-        //if(myWeatherDetailObject.weather == "Rain"){
+        if(myWeatherDetailObject.weather == "Rain" || myWeatherDetailObject.weather == "Rainy"){
             createNotification(myWeatherDetailObject.icon, "Watch out, it is rainy in " + myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
-        //}
+        }
     }
 
     private lateinit var notificationManager: NotificationManager
@@ -82,25 +82,16 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
         handler.post(runnableCode)
     }
 
-
-
-
     override fun onBind(intent: Intent): IBinder? {
 
-
         startTime = System.currentTimeMillis()
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
         lastLocation = Location("")
-
         notificationManager =
             getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
 
         getData()
-
-
         return null
     }
 

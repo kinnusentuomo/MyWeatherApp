@@ -12,7 +12,6 @@ import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class SimpleWeatherWidget : AppWidgetProvider() {
 
     val TAG = "WidgetProvider"

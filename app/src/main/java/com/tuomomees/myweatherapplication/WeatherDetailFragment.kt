@@ -3,7 +3,6 @@ package com.tuomomees.myweatherapplication
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,20 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [WeatherDetailFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [WeatherDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
 class WeatherDetailFragment : androidx.fragment.app.Fragment() {
 
     val TAG = "WeatherDetailFragment"
@@ -56,7 +44,6 @@ class WeatherDetailFragment : androidx.fragment.app.Fragment() {
 
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_weather_detail, container, false)
-        Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
         updateFragment(myWeatherDetailObject, view)
 
         return  view
@@ -92,7 +79,7 @@ class WeatherDetailFragment : androidx.fragment.app.Fragment() {
             }
     }
 
-    fun updateFragment(myWeatherDetailObject: MyWeatherDetailObject, view: View){
+    private fun updateFragment(myWeatherDetailObject: MyWeatherDetailObject, view: View){
         view.findViewById<TextView>(R.id.textViewWeather).text = myWeatherDetailObject.weather
         view.findViewById<TextView>(R.id.textViewCity).text = myWeatherDetailObject.cityName
         view.findViewById<TextView>(R.id.textViewTemperature).text = "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
