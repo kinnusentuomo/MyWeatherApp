@@ -69,15 +69,12 @@ class SimpleWeatherWidget : AppWidgetProvider() {
         private lateinit var views: RemoteViews
         private lateinit var myAppWidgetManager: AppWidgetManager
         private var myWidgetId: Int = 0
-        val appId = "7ac8041476369264714a77f37e2f4141"
         override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
 
         }
 
         override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
             Log.d("ThreadReadyWidget", "Data: " + myWeatherDetailObject.cityName)
-            //views = RemoteViews("com.tuomomees.myweatherapplication", R.layout.simple_weather_widget)
-
 
             if(myWeatherDetailObject.cityName != ""){
                 //update texts
@@ -101,12 +98,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
                 //try again
                 Log.e("WeatherWidget Thread", "Thread returned no data, cityname: " + myWeatherDetailObject.cityName)
             }
-        }
-
-
-        fun getSharedPref(key: String, context: Context): Float {
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            return sharedPref.getFloat(key, 0.0f)
         }
 
         internal fun updateAppWidget(

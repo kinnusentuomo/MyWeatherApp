@@ -8,12 +8,11 @@ import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,13 +24,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
     WeatherDetailGetterThread.ThreadReport {
 
-    private val appId = "7ac8041476369264714a77f37e2f4141"
     private val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
 
     override fun addDataToList(myWeatherDetailObject: MyWeatherDetailObject) {
-        //(activity as MainActivity).weatherDetailObjectList.add(myWeatherDetailObject)
+
     }
 
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
@@ -50,12 +48,10 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         weatherDetailFragment.arguments = fragmentArgs
 
         (activity as MainActivity).fragmentList.add(weatherDetailFragment)
-
         (activity as MainActivity).viewPager.adapter?.notifyDataSetChanged()
     }
 
     override fun onMapLongClick(p0: LatLng) {
-
 
         val marker = mMap.addMarker(MarkerOptions()
             .position(p0)
@@ -71,13 +67,11 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
         moveCamera(p0)
 
-
         Log.d(TAG, p0.toString())
 
         val location = Location("")
         location.longitude = p0.longitude
         location.latitude = p0.latitude
-        //(activity as MainActivity).sendQueryWithLocation(location)
         queryWithLocation(location, addedMarkerId)
     }
 
@@ -125,7 +119,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
 
 
-    @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
 

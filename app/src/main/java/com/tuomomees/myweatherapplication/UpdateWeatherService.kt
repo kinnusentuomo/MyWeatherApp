@@ -30,124 +30,37 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
         val currentTime = sdf.format(Date())
 
         Log.d("Service", "Weather status: " + myWeatherDetailObject.weather + " " +currentTime)
-        if(myWeatherDetailObject.weather == "Rain"){
+        //if(myWeatherDetailObject.weather == "Rain"){
             createNotification(myWeatherDetailObject.icon, "Watch out, it is rainy in " + myWeatherDetailObject.cityName, "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
-        }
+        //}
     }
 
-    val appId = "7ac8041476369264714a77f37e2f4141"
     private lateinit var notificationManager: NotificationManager
-
     var context: Context = this
-    var handler: Handler? = null
-    var runnable: Runnable? = null
-
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var lastLocation: Location
+    val TAG = "Service"
 
-    override fun onCreate() {
-        Toast.makeText(this, "Service created!", Toast.LENGTH_LONG).show()
+
+    var startTime: Long = 0
+
+    override fun onCreate() {/*
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-
-
         lastLocation = Location("")
-
-        val lat = SimpleWeatherWidget.getSharedPref("last_location_lat", this)
-        val lon = SimpleWeatherWidget.getSharedPref("last_location_lon", this)
-
 
         notificationManager =
             getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager
-/*
-        handler = Handler()
-        runnable = Runnable {
-            //Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show()
 
-            //val queryString = "https://api.openweathermap.org/data/2.5/weather?q=" + "Brahin" + "&appid=" + appId
-            val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
-            val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
-            weatherDetailGetterThread.call()
-
-
-            notificationManager =
-                getSystemService(
-                    Context.NOTIFICATION_SERVICE) as NotificationManager
-
-
-            handler!!.postDelayed(runnable, /*10000*/ TimeUnit.MINUTES.toMillis(60))
-        }
-
-        handler!!.postDelayed(runnable, TimeUnit.MINUTES.toMillis(60))*/
-
-        //getData()
-
-
-        getDataTest3()
+        getData()*/
     }
-
-
 
     private fun getData(){
-        val t = Timer()
-        val tt = object : TimerTask() {
 
-            override fun run() {
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location: Location ->
-                        lastLocation = location
-                    }
-
-                fusedLocationClient.lastLocation
-                    .addOnCompleteListener{
-                        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
-                        val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
-                        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
-                        weatherDetailGetterThread.call()
-                    }
-            }
-
-        }
-        t.schedule(tt, /*10 * 1000*/ TimeUnit.MINUTES.toMillis(1)) //Schedule to run tt (TimerTask) again after 10 seconds
-    }
-
-    private fun getDataTest2(){
-        // Create the Handler object (on the main thread by default)
         val handler = Handler()
-        // Define the code block to be executed
-        val runnableCode = Runnable {
-            // Do something here on the main thread
-            Log.d("Handlers", "Called on main thread")
-
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location ->
-                    lastLocation = location
-                }
-
-            fusedLocationClient.lastLocation
-                .addOnCompleteListener{
-                    val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
-                    val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
-                    weatherDetailGetterThread.call()
-                }
-        }
-        // Run the above code block on the main thread after 2 seconds
-        handler.postDelayed(runnableCode, TimeUnit.MINUTES.toMillis(1))
-    }
-
-    private fun getDataTest3(){
-        // Create the Handler object (on the main thread by default)
-        val handler = Handler()
-        // Define the code block to be executed
         val runnableCode = object : Runnable {
             override fun run() {
-                // Do something here on the main thread
-                Log.d("Handlers", "Called on main thread")
-                // Repeat this the same runnable code block again another 2 seconds
-                // 'this' is referencing the Runnable object
-
-
 
                 fusedLocationClient.lastLocation
                     .addOnSuccessListener { location: Location? ->
@@ -158,34 +71,35 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
 
                 fusedLocationClient.lastLocation
                     .addOnCompleteListener{
-                        //val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lastLocation.latitude + "&lon=" + lastLocation.longitude + "&appid=" + appId
                         val queryString = Helper().getQueryStringLocation(lastLocation.latitude, lastLocation.longitude)
                         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this@UpdateWeatherService)
                         weatherDetailGetterThread.call()
                     }
-                handler.postDelayed(this, TimeUnit.MINUTES.toMillis(30))
+                handler.postDelayed(this, TimeUnit.MINUTES.toMillis(30)) //interval can be defined here
             }
         }
-        // Start the initial runnable task by posting through the handler
+
         handler.post(runnableCode)
     }
 
 
 
+
     override fun onBind(intent: Intent): IBinder? {
 
-/*
-        val lat = SimpleWeatherWidget.getSharedPref("last_location_lat", this)
-        val lon = SimpleWeatherWidget.getSharedPref("last_location_lon", this)
 
-        val queryString = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + appId
-        val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, this, this)
-        weatherDetailGetterThread.call()
+        startTime = System.currentTimeMillis()
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+        lastLocation = Location("")
 
         notificationManager =
             getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager*/
+                Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        getData()
+
 
         return null
     }
@@ -193,15 +107,17 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
     override fun onDestroy() {
         /* IF YOU WANT THIS SERVICE KILLED WITH THE APP THEN UNCOMMENT THE FOLLOWING LINE */
         //handler.removeCallbacks(runnable);
-        Toast.makeText(this, "Service stopped", Toast.LENGTH_LONG).show()
+
+        val aliveTime = System.currentTimeMillis() - startTime
+        Log.d(TAG, "Service aliveTime: " + aliveTime)
+        Toast.makeText(this, "Service aliveTime: " + aliveTime, Toast.LENGTH_LONG).show()
     }
 
     override fun onStart(intent: Intent, startid: Int) {
         Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show()
     }
 
-
-    fun createNotification(icon: Int, title: String, message: String){
+    private fun createNotification(icon: Int, title: String, message: String){
 
         val channelID = "weather notifications"
         createNotificationChannel(channelID, "tämän tuubin kautta ammutaan notifikaatioita", channelID)
@@ -217,6 +133,7 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
         notificationManager.notify(0, notification)
     }
 
+    //API 25 has to be supported in my case because of the old testing devices
     private fun createNotificationChannel(name: String, description: String, id: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -230,40 +147,4 @@ class UpdateWeatherService : Service(), WeatherDetailGetterThread.ThreadReport {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
-/* //Modern way Android O ++
-    inner class MyJobCreator : JobCreator {
-
-        @Nullable
-        fun create(tag: String): Job? {
-            when (tag) {
-                MySyncJob.TAG -> return MySyncJob()
-                else -> return null
-            }
-        }
-    }
-
-    inner class MySyncJob : Job() {
-
-        protected fun onRunJob(params: Params): Result {
-            //
-            // run your job here
-            //
-            //
-            return Result.SUCCESS
-        }
-
-        companion object {
-
-            val TAG = "my_job_tag"
-
-            fun scheduleJob() {
-                JobRequest.Builder(MySyncJob.TAG)
-                    .setExecutionWindow(30_000L, 40_000L) //Every 30 seconds for 40 seconds
-                    .build()
-                    .schedule()
-            }
-        }
-    }*/
-
 }

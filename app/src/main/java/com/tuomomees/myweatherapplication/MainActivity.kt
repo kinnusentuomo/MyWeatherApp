@@ -4,12 +4,15 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.IBinder
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -45,9 +48,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     }
 
-    val appId = "7ac8041476369264714a77f37e2f4141"
     private var TAG = "MainActivity"
-    lateinit var toolbar: ActionBar
     private val LOCATION_REQUEST_CODE = 1706
     private lateinit var viewPager: androidx.viewpager.widget.ViewPager
     lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
@@ -94,7 +95,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
-            startService(Intent(this, UpdateWeatherService::class.java))
+            //startService(Intent(this, UpdateWeatherService::class.java))
+            //bindService(this, UpdateWeatherService::class.java)
+            Intent(this, UpdateWeatherService::class.java).also { intent ->
+                bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            }
         }
 
         if(!backgroundServiceEnabled && isMyServiceRunning(UpdateWeatherService::class.java)){
@@ -105,6 +110,28 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         }
         Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
     }
+
+
+    private lateinit var mService: UpdateWeatherService
+    private var mBound: Boolean = false
+
+
+    /** Defines callbacks for service binding, passed to bindService()  */
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+           // val binder = service as LocalService.LocalBinder
+           // mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mBound = false
+        }
+    }
+
+
 
     private fun isMyServiceRunning(serviceClass:Class<*>):Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -142,7 +169,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         } else {
             Log.i(TAG, "Permission to $permission granted!")
             getLastLocation()
-            //startService(Intent(this, UpdateWeatherService::class.java))
         }
     }
 
@@ -183,21 +209,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private fun initActionBar() {
 
         window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
-
-
         supportActionBar?.hide()
-
         window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
-
-
         setSupportActionBar(findViewById(R.id.toolbar))
-
-        //toolbar = supportActionBar!!
-
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
     }
 
     //Add fragments to list and then visible to viewpager via adapter
@@ -256,37 +273,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         viewPagerProgressBar.visibility = View.INVISIBLE
     }
 
-    /*
-    fun createNotification(icon: Int, title: String, message: String) {
-
-        val channelID = "weather notifications"
-        createNotificationChannel(channelID, "tämän tuubin kautta ammutaan notifikaatioita", channelID)
-        Log.d(TAG, message)
-
-        val notification = Notification.Builder(applicationContext, channelID)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(icon)
-            .setChannelId(channelID)
-            .build()
-
-        notificationManager?.notify(0, notification)
-    }*/
-/*
-    private fun createNotificationChannel(name: String, description: String, id: String) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(id, name, importance).apply {
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }*/
-
+    //Bottom navigation bar
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_map -> {
@@ -308,11 +295,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         false
     }
 
-
-    @SuppressLint("MissingPermission") //for some reason this moran IDE does not recognize my permission check done earlier....
     private fun getLastLocation() {
 
-        var myLocation = Location("Washington")
+        var myLocation = Location("")
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
 

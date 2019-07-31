@@ -27,10 +27,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
     lateinit var myWeatherDetailObject: MyWeatherDetailObject
 
     override fun call(): MyWeatherDetailObject {
-
-
-
-
         Log.d(TAG, "Caller: " + context)
 
         myWeatherDetailObject = MyWeatherDetailObject()
@@ -42,17 +38,13 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
             //Thread done -> stop loop -> return data
             running = false
-            Log.d(TAG, "running: " + running)
-
         }
-        Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
-
 
         return myWeatherDetailObject
     }
 
 
-    fun stopThread(stop: Boolean){
+    private fun stopThread(stop: Boolean){
         running = stop
     }
 
@@ -130,7 +122,7 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     }
 
-    fun getDataFromApixu(){
+    private fun getDataFromApixu(){
             //Lat Lon
             //https://api.apixu.com/v1/current.json?key=f24e5163a3664d16b8692210192507&q=48.8567,2.3508
             //City

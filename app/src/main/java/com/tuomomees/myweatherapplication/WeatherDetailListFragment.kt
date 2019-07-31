@@ -13,8 +13,6 @@ import android.widget.ListView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import androidx.core.content.ContextCompat.getSystemService
-
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,10 +25,7 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
     private var listItems: ArrayList<String>? = null
-
-    //private lateinit var adapter: ArrayAdapter<String>
     private lateinit var adapter: MyAdapter
-
     val TAG = "WeatherListFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +55,6 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         Log.d(TAG, listView.toString())
 
         Log.d(TAG, "listItems" + listItems.toString())
-        //adapter = ArrayAdapter(this.requireContext(), R.layout.simple_list_item_1, listItems)
-        //adapter = ArrayAdapter(this.requireContext(), R.layout.custom_list_view_layout, R.id.textViewListText, listItems)
         adapter = MyAdapter(this.requireActivity(), weatherDetailObjectList)
         listView.adapter = adapter
 
@@ -78,8 +71,6 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         return view
     }
 
-
-
     private fun addTextToListView(str: String) {
         listItems?.add(str)
         adapter.notifyDataSetChanged()
@@ -87,7 +78,6 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         Log.d("Adding to list", str)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
     }
@@ -120,7 +110,6 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
                 }
             }
     }
-
 
     //Adapter for a single listview item, returns one listitem which has text and image
     class MyAdapter(
