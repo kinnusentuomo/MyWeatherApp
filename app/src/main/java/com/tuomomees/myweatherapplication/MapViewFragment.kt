@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
 
 
 class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
@@ -26,6 +28,9 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
     private val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
+
+
+    //var unAddedMarkerBuffer: MutableList<MyWeatherDetailObject> = ArrayList()
 
     //Callback when thread ready
     override fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int) {
@@ -81,7 +86,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
     fun addMarkerWithDetails(myWeatherDetailObject: MyWeatherDetailObject){
 
-
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
@@ -93,12 +97,19 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
                         //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
                         .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
                     moveCamera(latLng)
+
+                    Log.d(TAG, "Added marker to map: " + myWeatherDetailObject.cityName)
                 }
             }
             catch (e: Exception){
                 Log.e(TAG, e.toString())
+                Log.d(TAG, "Could not add marker to map: " + myWeatherDetailObject.cityName)
+                //unAddedMarkerBuffer.add(myWeatherDetailObject)
+                Helper().tryAgain ({ addMarkerWithDetails(myWeatherDetailObject)}, 3, 1)
             }
     }
+
+
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
@@ -114,10 +125,8 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         Log.d(TAG, "Map ready")
 
         mMap = p0
-
         mMap.setOnMapLongClickListener(this)
         markerList = ArrayList()
-
 
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -150,6 +159,13 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
                 .title("Current location")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
         }
+
+/*
+        //Adding not added markers from buffer
+        unAddedMarkerBuffer.forEach{
+            addMarkerWithDetails(it)
+            Log.d(TAG, "Adding from buffer: " + it.cityName)
+        }*/
     }
 
 
@@ -168,14 +184,19 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         }
     }
 
+    //For some reason onCreateView is called every time switching 2 pages @viewpager
+    private var alreadyCalled: Boolean = false //TODO: fix this in a better way... original reason must be fixed
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
         val myRootView = inflater.inflate(R.layout.fragment_map_view, container, false)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        if(!alreadyCalled){
+            val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+            alreadyCalled = true
+        }
 
         Log.d(TAG, "onCreateView()")
         return myRootView

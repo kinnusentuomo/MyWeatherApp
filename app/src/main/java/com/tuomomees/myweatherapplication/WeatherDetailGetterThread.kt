@@ -15,6 +15,9 @@ import java.util.concurrent.Callable
 class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, private var markerId: Int = 0): Thread(),
     Callable<MyWeatherDetailObject> {
 
+
+
+    lateinit var sentContext: Context
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
     }
@@ -27,21 +30,23 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     override fun call(): MyWeatherDetailObject {
         Log.d(TAG, "Caller: " + context)
+        sentContext = context
 
         myWeatherDetailObject = MyWeatherDetailObject()
         while(running){
 
             if(!gettingData){
                 getDataFromApixu() //Apixu API
+                gettingData = true
             }
 
             //Thread done -> stop loop -> return data
             running = false
         }
 
+        Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName)
         return myWeatherDetailObject
     }
-
 
     private fun stopThread(stop: Boolean){
         running = stop
@@ -190,7 +195,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
                 Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
                 stopThread(true)
-                gettingData = true
 
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
 

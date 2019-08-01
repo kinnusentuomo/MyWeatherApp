@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var viewPager: androidx.viewpager.widget.ViewPager
     lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
-    //private lateinit var lastLatLng: LatLng
     lateinit var listFragment: WeatherDetailListFragment
     private lateinit var mapFragment: MapViewFragment
 
@@ -59,7 +58,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     private lateinit var myEditTextCity: EditText
 
-    //Application initialization when first created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
