@@ -105,7 +105,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
                 Log.e(TAG, e.toString())
                 Log.d(TAG, "Could not add marker to map: " + myWeatherDetailObject.cityName)
                 //unAddedMarkerBuffer.add(myWeatherDetailObject)
-                Helper().tryAgain ({ addMarkerWithDetails(myWeatherDetailObject)}, 3, 1)
+                Helper().tryAgain ({ addMarkerWithDetails(myWeatherDetailObject)}, 3, TimeUnit.SECONDS.toMillis(1))
             }
     }
 

@@ -39,18 +39,18 @@ class Helper {
     fun tryAgain(callBack: () -> Unit, tryCount: Int, interval: Long){
         var counter = 0
         val handler = Handler()
-        val weatherDataUpdaterLoop = object : Runnable {
-            override fun run() {
-                Log.d(TAG, "Trying to rerun: " + callBack + "for the: " + counter + " time")
-                callBack()
+        val weatherDataUpdaterLoop = Runnable {
+            Log.d(TAG, "Trying to rerun: " + callBack + "for the: " + counter + " time")
+            callBack()
 
-                handler.postDelayed(this, TimeUnit.MINUTES.toMillis(interval)) //interval can be defined here
-                counter++
-            }
+            //handler.postDelayed(this, /*TimeUnit.MINUTES.toMillis(interval)*/ interval) //interval can be defined here
+            counter++
         }
 
         if(counter <= tryCount){
-            handler.post(weatherDataUpdaterLoop)
+            Log.d(TAG, "TryCount: $counter")
+            //handler.post(weatherDataUpdaterLoop)
+            handler.postDelayed(weatherDataUpdaterLoop, /*TimeUnit.MINUTES.toMillis(interval)*/ interval)
         }
         else{
             Log.e(TAG, "Could not proceed with: $callBack")

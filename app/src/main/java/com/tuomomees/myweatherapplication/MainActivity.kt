@@ -19,6 +19,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -251,8 +252,13 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //Set Progressbar invisible -> Job done no more waiting
         viewPagerProgressBar.visibility = View.INVISIBLE
 
+
+        Log.d(TAG, "Adding: " + myWeatherDetailObject.cityName)
         //prevent nameless data
         if(myWeatherDetailObject.cityName != ""){
+
+
+            Log.d(TAG, "Adding still " + myWeatherDetailObject.cityName)
             //Add marker to MapView
             mapFragment.addMarkerWithDetails(myWeatherDetailObject)
 
@@ -274,6 +280,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
             //Update adapter
             viewPager.adapter?.notifyDataSetChanged()
+        }
+        else{
+            Toast.makeText(this, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
         }
     }
 

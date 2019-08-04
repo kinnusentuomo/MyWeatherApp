@@ -10,10 +10,12 @@
         android:background="@drawable/raindrop_bg"
         android:fitsSystemWindows="true">
 
-    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:translationZ="999dp">
         <ProgressBar
                 android:indeterminateTint="@color/colorWhite"
-                android:translationZ="999dp"
+
                 android:visibility="visible"
                 android:id="@+id/viewPagerProgressBar"
                 style="@style/ViewPagerProgressBarStyle"

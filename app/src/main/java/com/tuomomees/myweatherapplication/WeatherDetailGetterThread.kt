@@ -3,6 +3,7 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -15,9 +16,6 @@ import java.util.concurrent.Callable
 class WeatherDetailGetterThread(private var queryString: String, private var context: Context, private var threadObserver: ThreadReport, private var markerId: Int = 0): Thread(),
     Callable<MyWeatherDetailObject> {
 
-
-
-    lateinit var sentContext: Context
     interface ThreadReport {
         fun ThreadReady(myWeatherDetailObject: MyWeatherDetailObject, markerId: Int)
     }
@@ -30,7 +28,6 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
     override fun call(): MyWeatherDetailObject {
         Log.d(TAG, "Caller: " + context)
-        sentContext = context
 
         myWeatherDetailObject = MyWeatherDetailObject()
         while(running){
@@ -199,7 +196,11 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
 
             }, Response.ErrorListener {
-                Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+
+
+
+                //Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
                 stopThread(true)})
         queue.add(stringRequest)
