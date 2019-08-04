@@ -18,6 +18,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -60,6 +62,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var myEditTextCity: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+
+
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -80,15 +87,33 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         initSettings()
         initWidget()
 
+
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
     }
 
     override fun onResume(){
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val theme = sharedPref.getString("outfit_theme", "Dark")
+
+        if(theme == "Light"){
+            setTheme(R.style.AppThemeLight)
+        }
+        if(theme == "Dark"){
+            setTheme(R.style.AppTheme)
+        }
+
+
+
+
+
+
+
         super.onResume()
 
 
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
         val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
             //startService(Intent(this, UpdateWeatherService::class.java))
@@ -104,6 +129,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         else{
 
         }
+
+        //Set autocorrect on/off
+        val autoCorrectEnabled = sharedPref.getBoolean("application_autocorrect", true)
+        enableEditTextAutoCorrect(autoCorrectEnabled)
+
         Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
     }
 
@@ -141,7 +171,13 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     private fun initSettings(){
 
+
+
+
+
         val defaultCity = getSharedPrefString("application_default_location")
+
+
 
         //SendQuery with default city when app starts
         if(defaultCity != "" && defaultCity != null){
@@ -149,6 +185,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             viewPagerProgressBar.visibility = View.VISIBLE
             Helper().sendQueryWithCityString(defaultCity, this)
         }
+
+
     }
 
     private fun setupPermission(wantedPermission: String, requestCode: Int) {
@@ -301,6 +339,24 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             .addOnCompleteListener {
                 Helper().sendQueryWithLocation(myLocation, 0, this, this)
             }
+    }
+
+
+    private fun enableEditTextAutoCorrect(enable: Boolean){
+        // Get a reference to the AutoCompleteTextView in the layout
+        val textView = findViewById(R.id.editTextCity) as AutoCompleteTextView
+
+        val suggestions: Array<out String> = if(enable){
+            // Get the string array
+            resources.getStringArray(R.array.supported_city_array)
+        } else{
+            arrayOf<String>()
+        }
+
+        // Create the adapter and set it to the AutoCompleteTextView
+        ArrayAdapter(this, android.R.layout.simple_list_item_1, suggestions).also { adapter ->
+            textView.setAdapter(adapter)
+        }
     }
 
 

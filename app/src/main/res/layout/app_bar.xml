@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <AutoCompleteTextView
                 android:id="@+id/editTextCity"
                 android:layout_gravity="center"
                 android:textSize="25sp"

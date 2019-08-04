@@ -11,12 +11,38 @@
     <!-- Preference Titles -->
     <string name="widget_header">Widget settings</string>
     <string name="general_header">General</string>
+    <string name="outfit_header">Outfit</string>
 
     <!-- General Preferences -->
     <string name="application_default_location">Default location</string>
     <string name="application_rain_notification">Current location rain notification</string>
+    <string name="application_autocorrect">City suggestions</string>
 
     <!-- Widget Preferences -->
     <string name="widget_default_location">Default location</string>
     <string name="widget_update_interval">Update interval</string>
+
+    <!-- Outfit Preferences -->
+    <string name="outfit_theme">Theme</string>
+    <string-array name="outfit_theme_themelist">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="outfit_theme_themelist_entry_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <!-- EditText suggestions aka fetchable locations -->
+    <string-array name="supported_city_array">
+        <item>Oulu</item>
+        <item>Helsinki</item>
+        <item>Kajaani</item>
+        <item>Kuopio</item>
+        <item>Kokkola</item>
+        <item>Vaasa</item>
+        <item>Tampere</item>
+        <item>Jyväskylä</item>
+        <item>Heinola</item>
+    </string-array>
 </resources>
