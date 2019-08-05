@@ -9,7 +9,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
-    <string name="widget_header">Widget settings</string>
+    <string name="widget_header">Widget</string>
     <string name="general_header">General</string>
     <string name="outfit_header">Outfit</string>
 

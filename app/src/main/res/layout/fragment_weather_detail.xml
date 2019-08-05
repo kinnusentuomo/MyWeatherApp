@@ -7,7 +7,7 @@
                                                    tools:context=".WeatherDetailFragment">
 
     <TextView
-            style="@style/WhiteTextViewTheme"
+            android:textColor="?attr/primaryTextColor"
             android:textSize="55sp"
             android:textAlignment="center"
             android:id="@+id/textViewCity"
@@ -27,6 +27,8 @@
             >
 
         <ImageView
+                android:tint="?attr/primaryTextColor"
+
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
@@ -39,9 +41,9 @@
     </LinearLayout>
 
     <TextView
+            android:textColor="?attr/primaryTextColor"
             android:gravity="center"
             android:textSize="120sp"
-            style="@style/WhiteTextViewTheme"
             android:id="@+id/textViewTemperature"
             android:textAlignment="center"
             android:hint="25°C"
@@ -53,7 +55,8 @@
             app:layout_constraintHorizontal_bias="0.434" android:layout_marginStart="8dp"/>
 
     <TextView
-            style="@style/WhiteTextViewTheme"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="30sp"
             android:hint="Rainy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,7 +66,8 @@
             app:layout_constraintTop_toBottomOf="@+id/imageViewLayout"
             android:layout_marginTop="16dp"/>
     <TextView
-            style="@style/WhiteTextViewTheme"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="30sp"
             android:hint="90%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -73,7 +77,8 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewWeather"
     />
     <TextView
-            style="@style/WhiteTextViewTheme"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="30sp"
             android:hint="6.5m/s"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

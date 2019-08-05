@@ -1,13 +1,8 @@
 package com.tuomomees.myweatherapplication
 
 import android.Manifest
-import android.app.ActivityManager
-import android.app.AlertDialog
-import android.app.NotificationManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.app.*
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -63,8 +58,19 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        val theme = sharedPref.getString("outfit_theme", "1")
 
 
+        //TODO: autogenerate this
+        if(theme == "0"){
+            setTheme(R.style.Theme_App_Light)
+            Log.d(TAG, "Setting light theme")
+        }
+        if(theme == "1"){
+            setTheme(R.style.Theme_App_Dark)
+            Log.d(TAG, "Setting dark theme")
+        }
 
 
         super.onCreate(savedInstanceState)
@@ -87,32 +93,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         initSettings()
         initWidget()
 
-
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
+
+
+
+
     }
 
+
+
+
+
+
+
     override fun onResume(){
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-
-        val theme = sharedPref.getString("outfit_theme", "Dark")
-
-        if(theme == "Light"){
-            setTheme(R.style.AppThemeLight)
-        }
-        if(theme == "Dark"){
-            setTheme(R.style.AppTheme)
-        }
-
-
-
-
-
-
-
         super.onResume()
-
-
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
 
         val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
@@ -256,9 +253,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     //setup bottom navigation and set notification bar as transparent
     private fun initActionBar() {
 
-        window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
+        //window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
         supportActionBar?.hide()
-        window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
+        //window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
@@ -290,13 +287,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //Set Progressbar invisible -> Job done no more waiting
         viewPagerProgressBar.visibility = View.INVISIBLE
 
-
-        Log.d(TAG, "Adding: " + myWeatherDetailObject.cityName)
         //prevent nameless data
         if(myWeatherDetailObject.cityName != ""){
-
-
-            Log.d(TAG, "Adding still " + myWeatherDetailObject.cityName)
             //Add marker to MapView
             mapFragment.addMarkerWithDetails(myWeatherDetailObject)
 
@@ -304,7 +296,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             weatherDetailObjectList.add(myWeatherDetailObject)
 
             //Notify listview that data has changed
-            listFragment.adapter.notifyDataSetChanged()
+            try{
+                //TODO: this is only because of the settings activity restart--> fix original bug
+                listFragment.adapter.notifyDataSetChanged()}
+            catch(e: Exception){
+                Log.e(TAG, e.toString())
+            }
 
             //Create detail fragment
             val fragmentArgs = Bundle()

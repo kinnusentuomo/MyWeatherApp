@@ -2,12 +2,12 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.*
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +20,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.TimeUnit
+import androidx.core.graphics.drawable.DrawableCompat
+import android.graphics.drawable.Drawable
+
+import androidx.appcompat.content.res.AppCompatResources
+
+
 
 
 class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
@@ -28,6 +34,8 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
     private val TAG = "MapViewFragment"
     lateinit var mMap: GoogleMap
     lateinit var markerList: MutableList<Marker>
+
+    val helper = Helper()
 
 
     //var unAddedMarkerBuffer: MutableList<MyWeatherDetailObject> = ArrayList()
@@ -40,7 +48,7 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
         //AddMarker with data / Update marker with data by id
         markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
-        markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon))
+        markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, R.color.primaryText))
 
         //Add data to list (ListView)
         //(activity as MainActivity).addDataToList(myWeatherDetailObject)
@@ -89,13 +97,17 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
-            try{
+
+
+
+
+        try{
                 mMap.setOnMapLoadedCallback {
                     mMap.addMarker(MarkerOptions()
                         .position(latLng)
                         .title(titleString)
                         //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon)))
+                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, R.color.primaryText)))
                     moveCamera(latLng)
 
                     Log.d(TAG, "Added marker to map: " + myWeatherDetailObject.cityName)
@@ -105,21 +117,31 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
                 Log.e(TAG, e.toString())
                 Log.d(TAG, "Could not add marker to map: " + myWeatherDetailObject.cityName)
                 //unAddedMarkerBuffer.add(myWeatherDetailObject)
-                Helper().tryAgain ({ addMarkerWithDetails(myWeatherDetailObject)}, 3, TimeUnit.SECONDS.toMillis(1))
+
+                helper.tryAgain ({ addMarkerWithDetails(myWeatherDetailObject)}, 3, TimeUnit.SECONDS.toMillis(1))
             }
     }
 
 
 
-    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int, color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
         vectorDrawable!!.setBounds(0, 0, vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight)
+        vectorDrawable.setTint(color) //set Tint to get different colored icon
         val bitmap =
             Bitmap.createBitmap(vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
+
+
+
+
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
+
+
+
+
 
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
@@ -128,21 +150,30 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         mMap.setOnMapLongClickListener(this)
         markerList = ArrayList()
 
-        try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            val success = mMap.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    this.requireContext(), R.raw.style_json
-                )
-            )
 
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.")
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this.requireContext())
+        val theme = sharedPref.getString("outfit_theme", "1")
+
+        if(theme == "1"){
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                val success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        this.requireContext(), R.raw.style_json
+                    )
+                )
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.")
+                }
+            } catch (e: Resources.NotFoundException) {
+                Log.e(TAG, "Can't find style. Error: ", e)
             }
-        } catch (e: Resources.NotFoundException) {
-            Log.e(TAG, "Can't find style. Error: ", e)
         }
+
+
 
         var myLocation = Location("")
         (activity as MainActivity).fusedLocationClient.lastLocation

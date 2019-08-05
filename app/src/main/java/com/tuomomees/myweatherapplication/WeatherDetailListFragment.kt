@@ -23,7 +23,7 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
-    lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
+    var weatherDetailObjectList: MutableList<MyWeatherDetailObject> = ArrayList()
     private var listItems: ArrayList<String>? = null
     lateinit var adapter: MyAdapter
     val TAG = "WeatherListFragment"
