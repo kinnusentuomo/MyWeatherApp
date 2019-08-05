@@ -97,16 +97,18 @@
         <item name="colorPrimary">@color/lightColorPrimary</item>
         <item name="colorPrimaryDark">@color/lightColorPrimaryDark</item>
         <item name="primaryTextColor">@color/lightPrimaryText</item>
+        <item name="colorAccent">@color/lightColorAccent</item>
+
+
+
+
+
         <item name="android:navigationBarColor">@color/lightColorPrimaryDark</item>
         <item name="android:statusBarColor">@color/lightColorPrimaryDark</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar">true</item>
-
-
         <item name="android:textColor">@color/lightPrimaryText</item>
-
-
-
+        <item name="android:windowBackground">@color/lightColorPrimaryDark</item>
         <item name="android:dropDownItemStyle">@style/myDropDownItemStyle</item>
         <item name="android:dropDownListViewStyle">@style/myDropDownListViewStyleLight</item>
 
@@ -123,31 +125,42 @@
         <item name="colorPrimary">@color/darkColorPrimary</item>
         <item name="colorPrimaryDark">@color/darkColorPrimaryDark</item>
         <item name="primaryTextColor">@color/darkPrimaryText</item>
+        <item name="colorAccent">@color/darkColorAccent</item>
+
+
+
+
+
+        <item name="android:textColorSecondary">@color/darkSecondaryText</item>
         <item name="android:navigationBarColor">@color/darkColorPrimaryDark</item>
         <item name="android:statusBarColor">@color/darkColorPrimaryDark</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
-
-
         <item name="android:textColor">@color/darkPrimaryText</item>
-
-
-
-
         <item name="android:windowBackground">@color/darkColorPrimaryDark</item>
-
-
-
         <item name="android:dropDownItemStyle">@style/myDropDownItemStyle</item>
         <item name="android:dropDownListViewStyle">@style/myDropDownListViewStyleDark</item>
 
 
+        <item name="android:dialogTheme">@style/dialog</item>
 
 
 
         <item name="primaryButtonTheme">
             @style/Widget.Button.Primary
         </item>
+    </style>
+
+
+
+
+
+    <style name="dialog" parent="@android:style/Theme.Holo">
+
+        <item name="android:background">@color/darkColorPrimaryDark</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:text">perse</item>
+
     </style>
 
 
