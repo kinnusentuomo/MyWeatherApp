@@ -2,11 +2,11 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,10 +20,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.TimeUnit
-import androidx.core.graphics.drawable.DrawableCompat
-import android.graphics.drawable.Drawable
-
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.annotation.ColorInt
+import android.util.TypedValue
 
 
 
@@ -46,9 +44,15 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         //Set Progressbar invisible -> Job done no more waiting
         (activity as MainActivity).viewPagerProgressBar.visibility = View.INVISIBLE
 
+
+        //Get color for current theme
+        val typedValue = TypedValue()
+        context?.theme?.resolveAttribute(R.attr.primaryTextColor, typedValue, true)
+        @ColorInt val color = typedValue.data
+
         //AddMarker with data / Update marker with data by id
         markerList[markerId].title = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
-        markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, R.color.primaryText))
+        markerList[markerId].setIcon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, color))
 
         //Add data to list (ListView)
         //(activity as MainActivity).addDataToList(myWeatherDetailObject)
@@ -102,12 +106,21 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
 
 
         try{
+
+
+            //Get color for current theme
+            val typedValue = TypedValue()
+            context?.theme?.resolveAttribute(R.attr.primaryTextColor, typedValue, true)
+            @ColorInt val color = typedValue.data
+
+
+
                 mMap.setOnMapLoadedCallback {
                     mMap.addMarker(MarkerOptions()
                         .position(latLng)
                         .title(titleString)
                         //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, R.color.primaryText)))
+                        .icon(bitmapDescriptorFromVector(this.requireContext(), myWeatherDetailObject.icon, color)))
                     moveCamera(latLng)
 
                     Log.d(TAG, "Added marker to map: " + myWeatherDetailObject.cityName)
