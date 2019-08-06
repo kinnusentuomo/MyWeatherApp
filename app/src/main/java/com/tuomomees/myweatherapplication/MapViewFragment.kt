@@ -197,11 +197,13 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             }
 
         (activity as MainActivity).fusedLocationClient.lastLocation.addOnCompleteListener{
-            moveCamera(LatLng(myLocation.latitude, myLocation.longitude))
-            mMap.addMarker(MarkerOptions()
-                .position(LatLng(myLocation.latitude, myLocation.longitude))
-                .title("Current location")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+            if(myLocation.latitude != 0.0 && myLocation.longitude != 0.0){
+                moveCamera(LatLng(myLocation.latitude, myLocation.longitude))
+                mMap.addMarker(MarkerOptions()
+                    .position(LatLng(myLocation.latitude, myLocation.longitude))
+                    .title("Current location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+            }
         }
 
 /*

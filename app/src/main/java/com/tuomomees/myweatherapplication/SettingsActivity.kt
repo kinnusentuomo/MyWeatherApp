@@ -25,8 +25,9 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 AlertDialog.BUTTON_POSITIVE, "Restart app"
             ) { dialog, _ ->
                 dialog.dismiss()
-                recreate()
-                restartApp()
+                //recreate()
+                //restartApp()
+                restartThisApp()
 
             }
             alertDialog.setButton(
@@ -86,5 +87,11 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         finish()
         exitProcess(0)
 
+    }
+
+    private fun restartThisApp(){
+        val intent = Intent(this, MainActivity::class.java)
+        this.startActivity(intent)
+        this.finishAffinity()
     }
 }

@@ -104,14 +104,14 @@
 
 
         <item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
+        <item name="android:textColorPrimary">@color/darkPrimaryText</item>
+
 
 
         <item name="android:colorBackgroundFloating">
             @color/darkColorPrimaryDark</item>
         <item name="colorBackgroundFloating">@color/darkColorPrimaryDark</item>
         <item name="android:editTextColor">@color/darkSecondaryText</item>
-
-
 
         <item name="primaryButtonTheme">
             @style/Widget.Button.Primary
@@ -123,6 +123,7 @@
         <item name="android:textColor">@color/secondary_text_default_material_light</item>
         <item name="android:textSize">14dp</item>
     </style>
+
 
     <style name="myDropDownListViewStyleLight" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:background">@color/lightColorPrimaryDark</item>
