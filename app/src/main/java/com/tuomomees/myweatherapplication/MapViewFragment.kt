@@ -101,19 +101,11 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         val titleString = myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C"
         val latLng = LatLng(myWeatherDetailObject.latitude, myWeatherDetailObject.longitude)
 
-
-
-
-
         try{
-
-
             //Get color for current theme
             val typedValue = TypedValue()
             context?.theme?.resolveAttribute(R.attr.primaryTextColor, typedValue, true)
             @ColorInt val color = typedValue.data
-
-
 
                 mMap.setOnMapLoadedCallback {
                     mMap.addMarker(MarkerOptions()
@@ -135,8 +127,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
             }
     }
 
-
-
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int, color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
         vectorDrawable!!.setBounds(0, 0, vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight)
@@ -151,10 +141,6 @@ class MapViewFragment : androidx.fragment.app.Fragment(), OnMapReadyCallback, Go
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
-
-
-
-
 
     override fun onMapReady(p0: GoogleMap) {
         Log.d(TAG, "Map ready")
