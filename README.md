@@ -13,6 +13,8 @@ Ominaisuudet
   - Oletussijainti voidaan asettaa etukäteen, jonka data haetaan jo sovelluksen käynnistyessä
   - Oletussijainti widgettiin voidaan asettaa, jolloin widget ei hae dataa nykyisestä olinpaikasta, vaan ennalta määritellystä sijainnista
   - Taustapalvelu, joka varoittaa nykyisen sijainnin sateisuudesta voidaan asettaa päälle/pois päältä
+  - Teeman valinta Tumma / Vaalea
+  - Ennustava tekstinsyöttö päälle / pois
 
 
 ![alt text](https://github.com/tuomomees/MyWeatherApp/blob/master/app/src/main/res/screenshots/weather_details.jpeg "Weather Details")
