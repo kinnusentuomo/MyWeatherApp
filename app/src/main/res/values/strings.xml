@@ -44,5 +44,15 @@
         <item>Tampere</item>
         <item>Jyväskylä</item>
         <item>Heinola</item>
+        <item>Raahe</item>
+        <item>Espoo</item>
+        <item>Vantaa</item>
+        <item>Mariehamn</item>
+        <item>Turku</item>
+        <item>Rauma</item>
+        <item>Pori</item>
+        <item>Rovaniemi</item>
+        <item>Stockholm</item>
+        <item>Beijing</item>
     </string-array>
 </resources>

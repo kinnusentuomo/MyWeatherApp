@@ -95,17 +95,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
         //Setup location permission
         setupPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE)
-
-
-
-
     }
-
-
-
-
-
-
 
     override fun onResume(){
         super.onResume()
@@ -168,13 +158,7 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     private fun initSettings(){
 
-
-
-
-
         val defaultCity = getSharedPrefString("application_default_location")
-
-
 
         //SendQuery with default city when app starts
         if(defaultCity != "" && defaultCity != null){
@@ -182,8 +166,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             viewPagerProgressBar.visibility = View.VISIBLE
             Helper().sendQueryWithCityString(defaultCity, this)
         }
-
-
     }
 
     private fun setupPermission(wantedPermission: String, requestCode: Int) {
@@ -240,8 +222,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                         finish()
                     }
                     alertDialog.show()
-
-                    //finish()
                 } else {
                     Log.d(TAG, "Permission has been granted by user")
                     getLastLocation() //does not work when using virtual device

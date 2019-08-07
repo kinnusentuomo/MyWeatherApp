@@ -25,16 +25,12 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 AlertDialog.BUTTON_POSITIVE, "Restart app"
             ) { dialog, _ ->
                 dialog.dismiss()
-                //recreate()
-                //restartApp()
-                restartThisApp()
-
+                restartApp()
             }
             alertDialog.setButton(
-                AlertDialog.BUTTON_NEGATIVE, "Dismiss"
+                AlertDialog.BUTTON_NEGATIVE, "Ignore"
             ) { dialog, _ ->
                 dialog.dismiss()
-                //finish()
             }
             alertDialog.show()
         }
@@ -43,10 +39,8 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val sharedPref = android.preference.PreferenceManager.getDefaultSharedPreferences(this)
         val theme = sharedPref.getString("outfit_theme", "1")
-
 
         //TODO: autogenerate this
         if(theme == "0"){
@@ -58,17 +52,12 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         }
 
-
-
-
         setContentView(R.layout.settings_activity)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.settings, SettingsFragment())
             .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this)
     }
 
@@ -78,18 +67,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         }
     }
 
-    private fun restartApp() {
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        val mPendingIntentId = 123
-        val mPendingIntent = PendingIntent.getActivity(applicationContext, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        val mgr = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent)
-        finish()
-        exitProcess(0)
-
-    }
-
-    private fun restartThisApp(){
+    private fun restartApp(){
         val intent = Intent(this, MainActivity::class.java)
         this.startActivity(intent)
         this.finishAffinity()
