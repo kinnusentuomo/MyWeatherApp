@@ -65,16 +65,28 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         //TODO: autogenerate this
         if(theme == "0"){
             setTheme(R.style.Theme_App_Light)
+            //mainLayout.setBackgroundResource(R.drawable.raindrop_bg_white)
             Log.d(TAG, "Setting light theme")
         }
         if(theme == "1"){
             setTheme(R.style.Theme_App_Dark)
+            //mainLayout.setBackgroundResource(R.drawable.raindrop_bg)
             Log.d(TAG, "Setting dark theme")
         }
 
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        if(theme == "0"){
+            mainLayout.setBackgroundResource(R.drawable.raindrop_bg_white)
+        }
+        if(theme == "1"){
+            mainLayout.setBackgroundResource(R.drawable.raindrop_bg)
+        }
+
+
 
         myEditTextCity = findViewById(R.id.editTextCity)
         //editTextCity.addTextChangedListener(this)
