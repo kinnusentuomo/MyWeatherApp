@@ -32,6 +32,26 @@
                 app:title="@string/application_rain_notification"
         />
 
+        <SwitchPreference
+                app:defaultValue="true"
+                app:key="application_autocorrect"
+                app:title="@string/application_autocorrect"
+        />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+            app:title="@string/outfit_header">
+
+        <ListPreference
+                app:defaultValue="1"
+                app:entries="@array/outfit_theme_themelist"
+                app:entryValues="@array/outfit_theme_themelist_entry_values"
+                app:key="outfit_theme"
+                app:title="@string/outfit_theme"
+                app:useSimpleSummaryProvider="true"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -42,7 +62,7 @@
                 app:title="@string/widget_default_location"
                 app:useSimpleSummaryProvider="true"/>
 
-        <EditTextPreference
+        <SeekBarPreference
                 app:key="widget_update_interval"
                 app:title="@string/widget_update_interval"
                 app:useSimpleSummaryProvider="true"/>

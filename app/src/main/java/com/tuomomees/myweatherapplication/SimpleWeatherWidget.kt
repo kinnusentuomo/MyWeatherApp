@@ -21,14 +21,14 @@ class SimpleWeatherWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
 
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        val widgetDefaultLocation = sharedPref.getString("widget_default_location", "")
+        val widgetDefaultCity = sharedPref.getString("widget_default_location", "")
         views = RemoteViews(context.packageName, R.layout.simple_weather_widget)
 
-        if(widgetDefaultLocation != null && widgetDefaultLocation != "")
+        if(widgetDefaultCity != null && widgetDefaultCity != "")
         {
-            lastLocation = Location(widgetDefaultLocation)
+            lastLocation = Location(widgetDefaultCity)
 
-            val queryString = Helper().getQueryStringCity(widgetDefaultLocation)
+            val queryString = Helper().getQueryStringCity(widgetDefaultCity)
 
             for (appWidgetId in appWidgetIds) {
                 updateAppWidget(context, appWidgetManager, appWidgetId, queryString)
@@ -53,7 +53,6 @@ class SimpleWeatherWidget : AppWidgetProvider() {
                 }
         }
     }
-
 
     override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
@@ -93,6 +92,7 @@ class SimpleWeatherWidget : AppWidgetProvider() {
             else{
                 //try again
                 Log.e("WeatherWidget Thread", "Thread returned no data, cityname: " + myWeatherDetailObject.cityName)
+
             }
         }
 
@@ -104,11 +104,7 @@ class SimpleWeatherWidget : AppWidgetProvider() {
             myWidgetId = appWidgetId
             myAppWidgetManager = appWidgetManager
 
-            val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, this)
-            weatherDetailGetterThread.call()
-
-            views = RemoteViews(context.packageName, R.layout.simple_weather_widget)
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+            WeatherDetailGetterThread(queryString, context, this).call()
         }
     }
 }

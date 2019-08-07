@@ -23,7 +23,7 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
-    lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
+    var weatherDetailObjectList: MutableList<MyWeatherDetailObject> = ArrayList()
     private var listItems: ArrayList<String>? = null
     lateinit var adapter: MyAdapter
     val TAG = "WeatherListFragment"
@@ -61,21 +61,10 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         if (listView != null) {
             listView.adapter = adapter
         }
-        for(myWeatherDetailObject in weatherDetailObjectList){
-            addTextToListView(myWeatherDetailObject.cityName + " " + "%.0f".format(myWeatherDetailObject.temp_c) + "°C")
-        }
 
         Log.d(TAG, "onCreateView")
 
-
         return view
-    }
-
-    private fun addTextToListView(str: String) {
-        listItems?.add(str)
-        adapter.notifyDataSetChanged()
-
-        Log.d("Adding to list", str)
     }
 
     fun onButtonPressed(uri: Uri) {
@@ -116,17 +105,16 @@ class WeatherDetailListFragment : androidx.fragment.app.Fragment() {
         context: Context,
         private val myWeatherDetailObjectList: List<MyWeatherDetailObject>) : BaseAdapter() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val rowView = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
+            val rowItem = inflater.inflate(R.layout.custom_list_view_layout, parent, false)
 
             val formattedTemp = "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
             val cityName = myWeatherDetailObjectList[position].cityName
             val formattedString = "$cityName $formattedTemp"
 
-            //rowView.findViewById<TextView>(R.id.textViewListText).text = myWeatherDetailObjectList[position].cityName + " " + "%.0f".format(myWeatherDetailObjectList[position].temp_c) + "°C"
-            rowView.findViewById<TextView>(R.id.textViewListText).text = formattedString
-            rowView.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(myWeatherDetailObjectList[position].icon)
+            rowItem.findViewById<TextView>(R.id.textViewListText).text = formattedString
+            rowItem.findViewById<ImageView>(R.id.imageViewListIcon).setImageResource(myWeatherDetailObjectList[position].icon)
 
-            return rowView
+            return rowItem
         }
 
         override fun getItem(position: Int): Any {

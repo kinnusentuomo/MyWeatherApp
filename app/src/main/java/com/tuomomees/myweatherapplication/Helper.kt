@@ -2,7 +2,9 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.location.Location
+import android.os.Handler
 import android.util.Log
+import java.util.concurrent.TimeUnit
 
 class Helper {
 
@@ -32,5 +34,28 @@ class Helper {
         val queryString = Helper().getQueryStringLocation(location.latitude, location.longitude)
         val weatherDetailGetterThread = WeatherDetailGetterThread(queryString, context, threadObserver as WeatherDetailGetterThread.ThreadReport, markerId)
         weatherDetailGetterThread.call()
+    }
+
+    var counter = 0
+    fun tryAgain(callBack: () -> Unit, tryCount: Int, interval: Long){
+
+
+        val handler = Handler()
+        val weatherDataUpdaterLoop = Runnable {
+            Log.d(TAG, "Trying to rerun: " + callBack.toString() + "for the: " + counter + " time")
+            callBack()
+            //handler.postDelayed(this, /*TimeUnit.MINUTES.toMillis(interval)*/ interval) //interval can be defined here
+        }
+
+        if(counter < tryCount){
+            //handler.post(weatherDataUpdaterLoop)
+            counter++
+            handler.postDelayed(weatherDataUpdaterLoop, /*TimeUnit.MINUTES.toMillis(interval)*/ interval)
+        }
+        else{
+            Log.e(TAG, "Could not proceed with: $callBack")
+            counter = 0
+
+        }
     }
 }

@@ -7,7 +7,6 @@
              tools:context=".MapViewFragment">
 
     <fragment
-
             android:name="com.google.android.gms.maps.SupportMapFragment"
             map:cameraZoom="10"
             tools:context="com.example.styledmap.MapsActivityRaw"

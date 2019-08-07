@@ -5,15 +5,15 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:layout_scrollFlags="scroll|enterAlways|snap"
-        android:background="@color/cardview_dark_background"
+        android:background="?attr/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <AutoCompleteTextView
+                android:textColor="?attr/primaryTextColor"
                 android:id="@+id/editTextCity"
                 android:layout_gravity="center"
                 android:textSize="25sp"
-                style="@style/WhiteTextViewTheme"
                 android:layout_width="250dp"
                 android:layout_height="50dp"
                 android:inputType="textPersonName"
@@ -22,6 +22,8 @@
                 android:layout_marginStart="5sp"/>
 
         <Button
+                android:backgroundTint="?attr/primaryTextColor"
+                android:theme="?attr/primaryButtonTheme"
                 android:id="@+id/button"
                 android:foreground="?attr/selectableItemBackground"
                 android:clickable="true"
@@ -34,6 +36,7 @@
                 app:layout_constraintStart_toEndOf="@+id/editTextCity"
                 app:layout_constraintTop_toTopOf="parent" android:focusable="true"/>
         <Button
+                android:backgroundTint="?attr/primaryTextColor"
                 android:id="@+id/settingsButton"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackground"
@@ -44,6 +47,5 @@
                 android:layout_height="40dp"
                 android:onClick="goToSettings"
                 android:focusable="true"/>
-
 
 </androidx.appcompat.widget.Toolbar>

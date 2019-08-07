@@ -1,13 +1,8 @@
 package com.tuomomees.myweatherapplication
 
 import android.Manifest
-import android.app.ActivityManager
-import android.app.AlertDialog
-import android.app.NotificationManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.app.*
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
@@ -18,7 +13,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -50,7 +48,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     private lateinit var viewPager: androidx.viewpager.widget.ViewPager
     lateinit var fragmentList: ArrayList<androidx.fragment.app.Fragment>
     lateinit var weatherDetailObjectList: MutableList<MyWeatherDetailObject>
-    //private lateinit var lastLatLng: LatLng
     lateinit var listFragment: WeatherDetailListFragment
     private lateinit var mapFragment: MapViewFragment
 
@@ -59,8 +56,23 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     private lateinit var myEditTextCity: EditText
 
-    //Application initialization when first created
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        val theme = sharedPref.getString("outfit_theme", "1")
+
+
+        //TODO: autogenerate this
+        if(theme == "0"){
+            setTheme(R.style.Theme_App_Light)
+            Log.d(TAG, "Setting light theme")
+        }
+        if(theme == "1"){
+            setTheme(R.style.Theme_App_Dark)
+            Log.d(TAG, "Setting dark theme")
+        }
+
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -87,9 +99,8 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
     override fun onResume(){
         super.onResume()
-
-
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
         val backgroundServiceEnabled = sharedPref.getBoolean("application_rain_notification", false)
         if(backgroundServiceEnabled && !isMyServiceRunning(UpdateWeatherService::class.java)){
             //startService(Intent(this, UpdateWeatherService::class.java))
@@ -105,6 +116,11 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
         else{
 
         }
+
+        //Set autocorrect on/off
+        val autoCorrectEnabled = sharedPref.getBoolean("application_autocorrect", true)
+        enableEditTextAutoCorrect(autoCorrectEnabled)
+
         Log.d(TAG, "Backgroundservice enabled: " + backgroundServiceEnabled)
     }
 
@@ -206,8 +222,6 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
                         finish()
                     }
                     alertDialog.show()
-
-                    //finish()
                 } else {
                     Log.d(TAG, "Permission has been granted by user")
                     getLastLocation() //does not work when using virtual device
@@ -219,9 +233,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
     //setup bottom navigation and set notification bar as transparent
     private fun initActionBar() {
 
-        window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
+        //window.navigationBarColor = resources.getColor(R.color.cardview_dark_background)
         supportActionBar?.hide()
-        window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
+        //window.statusBarColor = resources.getColor(R.color.cardview_dark_background)
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
@@ -262,7 +276,12 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             weatherDetailObjectList.add(myWeatherDetailObject)
 
             //Notify listview that data has changed
-            listFragment.adapter.notifyDataSetChanged()
+            try{
+                //TODO: this is only because of the settings activity restart--> fix original bug
+                listFragment.adapter.notifyDataSetChanged()}
+            catch(e: Exception){
+                Log.e(TAG, e.toString())
+            }
 
             //Create detail fragment
             val fragmentArgs = Bundle()
@@ -276,6 +295,9 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
 
             //Update adapter
             viewPager.adapter?.notifyDataSetChanged()
+        }
+        else{
+            Toast.makeText(this, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -294,6 +316,24 @@ class MainActivity : AppCompatActivity(), WeatherDetailFragment.OnFragmentIntera
             .addOnCompleteListener {
                 Helper().sendQueryWithLocation(myLocation, 0, this, this)
             }
+    }
+
+
+    private fun enableEditTextAutoCorrect(enable: Boolean){
+        // Get a reference to the AutoCompleteTextView in the layout
+        val textView = findViewById(R.id.editTextCity) as AutoCompleteTextView
+
+        val suggestions: Array<out String> = if(enable){
+            // Get the string array
+            resources.getStringArray(R.array.supported_city_array)
+        } else{
+            arrayOf<String>()
+        }
+
+        // Create the adapter and set it to the AutoCompleteTextView
+        ArrayAdapter(this, android.R.layout.simple_list_item_1, suggestions).also { adapter ->
+            textView.setAdapter(adapter)
+        }
     }
 
 

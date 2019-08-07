@@ -2,23 +2,47 @@
 <resources>
     <color name="colorBlack">#000</color>
     <color name="colorWhite">#FFFF</color>
-
-
-    <color name="colorPrimaryDark">@android:color/darker_gray</color>
-    <color name="colorPrimary">#FFFFFF</color> <!-- #AA this is the background -->
-    <color name="colorPrimaryTransparent">#AAFFFFFF</color> <!-- #AA this is the background -->
-    <color name="colorAccent">#ff325e7b</color> <!-- toolbar color -->
-    <color name="colorAccentLight">#02C39A</color>
-    <color name="colorContrast">#F0F3BD</color>
     <color name="textColorDark">#000</color>
     <color name="colorDarkGray">#A9A9A9</color>
 
 
-    <color name="barColor1"></color>
-    <color name="barColor2"></color>
-    <color name="barColor3"></color>
-    <color name="barColor4"></color>
-    <color name="barColor5"></color>
-    <color name="barColor6"></color>
-    <color name="barColor7"></color>
+
+    <!-- These are the basic colors -->
+    <color name="colorPrimaryDark">@android:color/darker_gray</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryTransparent">#AAFFFFFF</color>
+    <color name="colorAccent">#ff325e7b</color>
+
+
+
+
+
+
+
+    <!-- Defaults not set -->
+    <color name="primaryText">#FF0000</color>
+    <color name="buttonNormal">#FF0000</color>
+    <color name="buttonHighlight">#FF0000</color>
+    <color name="buttonText">#FF0000</color>
+
+
+    <!-- Light theme colors -->
+    <color name="lightColorPrimary">#EBEBEB</color>
+    <color name="lightColorPrimaryDark">#dedede</color>
+    <color name="lightColorAccent">#465e75</color>
+    <color name="lightPrimaryText">#3D3B3B</color>
+    <color name="lightSecondaryText">#636363</color>
+    <color name="lightButtonNormal">#FF0000</color>
+    <color name="lightButtonHighlight">#FF0000</color>
+    <color name="lightButtonText">#FF0000</color>
+
+    <!-- Dark theme colors -->
+    <color name="darkColorPrimary">#3D3B3B</color>
+    <color name="darkColorPrimaryDark">#3D3B3B</color>
+    <color name="darkColorAccent">#9c5d00</color>
+    <color name="darkPrimaryText">#EBEBEB</color>
+    <color name="darkSecondaryText">#a1a1a1</color>
+    <color name="darkButtonNormal">#FF0000</color>
+    <color name="darkButtonHighlight">#FF0000</color>
+    <color name="darkButtonText">#FF0000</color>
 </resources>

@@ -3,6 +3,7 @@ package com.tuomomees.myweatherapplication
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -33,15 +34,16 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
             if(!gettingData){
                 getDataFromApixu() //Apixu API
+                gettingData = true
             }
 
             //Thread done -> stop loop -> return data
             running = false
         }
 
+        Log.d(TAG, "Returning: " + myWeatherDetailObject.cityName)
         return myWeatherDetailObject
     }
-
 
     private fun stopThread(stop: Boolean){
         running = stop
@@ -190,12 +192,15 @@ class WeatherDetailGetterThread(private var queryString: String, private var con
 
                 Log.d(TAG, myWeatherDetailObject.cityName + " " + myWeatherDetailObject.temp_c)
                 stopThread(true)
-                gettingData = true
 
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
 
             }, Response.ErrorListener {
-                Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+
+
+
+                //Toast.makeText(context, "Could not find data with given city name, please try again." , Toast.LENGTH_SHORT).show()
+
                 threadObserver.ThreadReady(myWeatherDetailObject, markerId)
                 stopThread(true)})
         queue.add(stringRequest)
